@@ -22,24 +22,30 @@ readings_all <-
     )
   }) |> set_names(devices)
 
-# collapse list of lists to list of data frames
 all_df <- 
   readings_all |> 
+  # collapse list of lists to list of data frames
   map(\(x) list_rbind(x, names_to = "sensor_port")) |> 
-  #collapse list of data frames to a single data frame
+  # collapse list of data frames to a single data frame
   list_rbind(names_to = "device_sn") |> 
-  #same wrangling as above
-  separate_wider_delim(sensor_port, "_", names = c("sensor", "port")) |> 
+  # some initial data wrangling
+  separate_wider_delim(sensor_port, delim = "_", names = c("sensor", "port")) |> 
   mutate(
     port = str_remove(port, "port"),
-    datetime = str_remove(datetime, "-07:00$") |> ymd_hms(tz = "America/Phoenix")
+    datetime = str_remove(datetime, "-07:00$") |>
+      ymd_hms(tz = "America/Phoenix")
   ) |> 
-  select(-timestamp_utc, -tz_offset)
+  select(-timestamp_utc, -tz_offset) #redundant columns
 
 # Get file size by # weeks of data ----------------------------------------
 
+# This writes out .csv files containing 1, 2, 3, etc. weeks of data and gets the
+# file size for each
+
 ends <- seq(ymd("2023-08-01"), ymd("2023-10-01"), "weeks")[-1]
 ends
+
+# map2_vec is used here because fs::file_size() returns a special type of vector (class "fs_bytes") that automatically converts from bytes to KB, MB, GB, etc. and I want to keep that instead of making it numeric with map2() or map2_dbl()
 
 size <- map2_vec(ends, seq_along(ends), \(end, id) {
   outpath <- withr::local_tempfile()
@@ -53,6 +59,8 @@ size <- map2_vec(ends, seq_along(ends), \(end, id) {
 
 size
 
+# put it in a data frame for plotting and modeling purposes
+
 size_df <- tibble(weeks = seq_along(ends), size = size) 
 
 size_df |> 
@@ -64,10 +72,8 @@ size_df |>
 m <- lm(size ~ weeks, data = size_df)
 coef(m)
 
-size_fun <- function(weeks) {
-  fs::as_fs_bytes(7992.071) + fs::as_fs_bytes(1029945.345)*weeks
-}
+#estimate for a year
+weeks <- 52
+fs::as_fs_bytes(coef(m)[1]) + fs::as_fs_bytes(coef(m)[2]) * weeks
 
-#1 year
-size_fun(weeks = 52)
 #51.1M as .csv without joined metadata
