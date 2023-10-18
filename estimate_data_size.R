@@ -1,6 +1,8 @@
 # Load packages and setup -------------------------------------------------
 library(tidyverse)
 library(zentracloud)
+library(withr)
+library(fs)
 
 setZentracloudOptions(
   token = Sys.getenv("ZENTRACLOUD_TOKEN"),
