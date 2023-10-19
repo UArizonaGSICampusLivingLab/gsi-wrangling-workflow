@@ -13,3 +13,4 @@ ZENTRACLOUD_TOKEN=<token>
 ### Contributors
 
 - Eric Scott
+- Malcolm Barrios
