@@ -9,3 +9,6 @@ ZENTRACLOUD_TOKEN=<token>
 ### Files
 
 - `estimate_data_size.R` is a script with some functions for extrapolating data size
+
+###Contributors 
+Malcolm Barrios
