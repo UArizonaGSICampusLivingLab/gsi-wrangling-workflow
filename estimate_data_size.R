@@ -4,11 +4,19 @@ library(zentracloud)
 library(withr)
 library(fs)
 
-setZentracloudOptions(
+zentracloud::setZentracloudOptions(
   token = Sys.getenv("ZENTRACLOUD_TOKEN"),
   domain = "default"
 )
 
+one_device <- getReadings(
+  device_sn = "z6-19484",
+  start_time = "2023-08-01 00:00:00",
+  end_time = "2023-10-01 12:00:00"
+  # end_time = format(Sys.time(), "%Y-%m-%d %H:%M:%S") #now
+)
+
+one_device |> list_rbind(names_to = "sensor_port")
 
 # Read data from all devices ----------------------------------------------
 
