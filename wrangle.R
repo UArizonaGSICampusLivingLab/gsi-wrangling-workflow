@@ -26,7 +26,7 @@ readings_all <-
   map(devices, \(x) {
     getReadings(
       device_sn  = x,
-      start_time = format(prev_end, "%Y-%m-%d %H:%M:%S"),
+      start_time = format(prev_end, "%Y-%m-%d %H:%M:%S"), #should actually be timestep after prev_end
       end_time   = format(lubridate::now(), "%Y-%m-%d %H:%M:%S")
     )
   }) |> set_names(devices)
@@ -42,7 +42,7 @@ all_df <-
   # some initial data wrangling
   separate_wider_delim(sensor_port, delim = "_", names = c("sensor", "port")) |> 
   mutate(
-    port = str_remove(port, "port"),
+    port = str_remove(port, "port") |> as.numeric(),
     datetime = parse_date_time(datetime, orders = "%Y-%m-%d %H:%M:%S%z", exact = TRUE) |> 
       with_tz("America/Phoenix")
   ) |> 
