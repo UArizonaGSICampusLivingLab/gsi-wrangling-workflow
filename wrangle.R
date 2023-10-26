@@ -14,6 +14,8 @@ if (file_exists("example_data.csv")) {
 } else {
   #this should only have to run the first time or if the file goes missing
   # prev_end <- first_date_on_zentracloud
+  old_dat <- tibble()
+  prev_end <- today() - days(10)
 }
 
 
