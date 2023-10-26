@@ -34,3 +34,5 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 ~/.boxr-oauth
+# large files
+example_data.csv
