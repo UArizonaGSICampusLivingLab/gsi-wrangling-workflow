@@ -48,6 +48,7 @@ all_df <-
     datetime = parse_date_time(datetime, orders = "%Y-%m-%d %H:%M:%S%z", exact = TRUE) |> 
       with_tz("America/Phoenix")
   ) |> 
+  filter(!is.na(sensor)) |> #There are some NAs for `sensor` in some versions of the wrangled data.  This removes them.
   select(-timestamp_utc, -tz_offset) #redundant columns
 
 
