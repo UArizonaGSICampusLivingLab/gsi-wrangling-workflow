@@ -11,6 +11,14 @@
         "URL": "https://cct-datascience.r-universe.dev"
       },
       {
+        "Name": "r_universe",
+        "URL": "https://cct-datascience.r-universe.dev"
+      },
+      {
+        "Name": "r_universe",
+        "URL": "https://cct-datascience.r-universe.dev"
+      },
+      {
         "Name": "CRAN",
         "URL": "https://packagemanager.posit.co/cran/latest"
       }
@@ -45,11 +53,12 @@
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.5-4.1",
+      "Version": "1.6-1.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
+        "grDevices",
         "graphics",
         "grid",
         "lattice",
@@ -57,7 +66,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "38082d362d317745fb932e13956dccbb"
+      "Hash": "1a00d4828f33a9d690806e98bd17150c"
     },
     "R.methodsS3": {
       "Package": "R.methodsS3",
@@ -437,7 +446,7 @@
     },
     "dbplyr": {
       "Package": "dbplyr",
-      "Version": "2.4.0",
+      "Version": "2.3.4",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -461,7 +470,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "59351f28a81f0742720b85363c4fdd61"
+      "Hash": "63534894354af6b2587b7aa518a5193a"
     },
     "digest": {
       "Package": "digest",
@@ -887,6 +896,17 @@
       ],
       "Hash": "0080607b4a1a7b28979aecef976d8bc2"
     },
+    "jose": {
+      "Package": "jose",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "jsonlite",
+        "openssl"
+      ],
+      "Hash": "acf397c005e2d96a4b7616bf7dfc3112"
+    },
     "jquerylib": {
       "Package": "jquerylib",
       "Version": "0.1.4",
@@ -947,7 +967,7 @@
     },
     "lattice": {
       "Package": "lattice",
-      "Version": "0.21-8",
+      "Version": "0.22-4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -958,7 +978,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "0b8a6d63c8770f02a8b5635f3c431e6b"
+      "Hash": "7ae8282579016aee39386e2813d7c342"
     },
     "lifecycle": {
       "Package": "lifecycle",
@@ -1009,7 +1029,7 @@
     },
     "mgcv": {
       "Package": "mgcv",
-      "Version": "1.8-42",
+      "Version": "1.9-0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1022,7 +1042,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "3460beba7ccc8946249ba35327ba902a"
+      "Hash": "086028ca0460d0c368028d3bda58f31b"
     },
     "mime": {
       "Package": "mime",
@@ -1065,7 +1085,7 @@
     },
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-162",
+      "Version": "3.1-163",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1075,7 +1095,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "0984ce8da8da9ead8643c5cbbb60f83e"
+      "Hash": "8d1938040a05566f4f7a14af4feadd6b"
     },
     "openssl": {
       "Package": "openssl",
@@ -1372,7 +1392,7 @@
     },
     "rsconnect": {
       "Package": "rsconnect",
-      "Version": "1.1.1",
+      "Version": "1.1.0",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1390,7 +1410,7 @@
         "tools",
         "yaml"
       ],
-      "Hash": "672fc66985074d17c86b6335105143b8"
+      "Hash": "ec53d658cf0abbd7cd7ce2d6b9d70337"
     },
     "rstudioapi": {
       "Package": "rstudioapi",
