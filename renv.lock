@@ -19,6 +19,10 @@
         "URL": "https://cct-datascience.r-universe.dev"
       },
       {
+        "Name": "r_universe",
+        "URL": "https://cct-datascience.r-universe.dev"
+      },
+      {
         "Name": "CRAN",
         "URL": "https://packagemanager.posit.co/cran/latest"
       }
@@ -446,7 +450,7 @@
     },
     "dbplyr": {
       "Package": "dbplyr",
-      "Version": "2.3.4",
+      "Version": "2.4.0",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -470,7 +474,7 @@
         "vctrs",
         "withr"
       ],
-      "Hash": "63534894354af6b2587b7aa518a5193a"
+      "Hash": "59351f28a81f0742720b85363c4fdd61"
     },
     "digest": {
       "Package": "digest",
@@ -603,16 +607,16 @@
     },
     "foreign": {
       "Package": "foreign",
-      "Version": "0.8-84",
+      "Version": "0.8-85",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "methods",
         "stats",
         "utils"
       ],
-      "Hash": "467ec0ca895d4e61a22cfbac9bccddf8"
+      "Hash": "26a24dde1722321b78f10d3bf42538d6"
     },
     "fs": {
       "Package": "fs",
@@ -967,9 +971,9 @@
     },
     "lattice": {
       "Package": "lattice",
-      "Version": "0.22-4",
+      "Version": "0.22-5",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "grDevices",
@@ -978,7 +982,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "7ae8282579016aee39386e2813d7c342"
+      "Hash": "7c5e89f04e72d6611c77451f6331a091"
     },
     "lifecycle": {
       "Package": "lifecycle",
@@ -1392,7 +1396,7 @@
     },
     "rsconnect": {
       "Package": "rsconnect",
-      "Version": "1.1.0",
+      "Version": "1.1.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1410,7 +1414,7 @@
         "tools",
         "yaml"
       ],
-      "Hash": "ec53d658cf0abbd7cd7ce2d6b9d70337"
+      "Hash": "672fc66985074d17c86b6335105143b8"
     },
     "rstudioapi": {
       "Package": "rstudioapi",
