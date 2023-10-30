@@ -1,6 +1,12 @@
 gsi_get_data <- 
-  function(start, devices = c("z6-19484", "z6-20761", "z6-20764", "z6-20762", "z6-20763")) {
+  function(start, end = NULL, devices = c("z6-19484", "z6-20761", "z6-20764", "z6-20762", "z6-20763")) {
 
+    if (is.null(end)) {
+      end <- lubridate::now()
+    } else {
+      stopifnot(inherits(end, c("POSIXct", "Date")))
+    }
+    
   # Download data -----------------------------------------------------------
   readings_all <- 
     # provide an "anonymous function" to map() to iterate over `devices`
@@ -8,7 +14,7 @@ gsi_get_data <-
       getReadings(
         device_sn  = x,
         start_time = format(start, "%Y-%m-%d %H:%M:%S"), 
-        end_time   = format(lubridate::now(), "%Y-%m-%d %H:%M:%S")
+        end_time   = format(end, "%Y-%m-%d %H:%M:%S")
       )
     }) |> set_names(devices)
 
