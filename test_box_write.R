@@ -8,20 +8,15 @@ library(tidyverse)
 library(zentracloud)
 source("R/gsi_get_data.R")
 
-# fs::dir_create("~/.boxr-auth")
-# fs::file_chmod("~/.boxr-auth", mode = "u=wrx")
 
-# box_auth_service()
-#need to wait for app to be authorized
-# https://arizona.app.box.com/developers/console/app/2140371/authorization
+# Box auth ----------------------------------------------------------------
 
-# reads client ID and client secret from .Renviron and finds OAuth2 token.  Requires interactive use.
-box_auth()
-
-# id of test folder: https://arizona.app.box.com/folder/231499521564
-dir_id <- "231499521564"
-
+box_auth_service()
+# As the service app, setwd
+dir_id <- "233031886906"
 box_setwd(dir_id)
+
+# wrangling workflow ------------------------------------------------------
 
 #list current files
 files <- box_ls() |> as_tibble()
@@ -36,7 +31,7 @@ if ("example_data.csv" %in% files$name) {
   prev_end <- max(old_dat$datetime) |> with_tz("America/Phoenix")
 } else {
   old_dat <- tibble()
-  prev_end <- ymd("2023-01-01") #or whatever the first date is
+  prev_end <- ymd("2023-10-01") #or whatever the first date is
 }
 
 # Get the data and wrangle it
