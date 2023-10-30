@@ -1,0 +1,24 @@
+---
+title: "Green Stormwater Infrastructure Data Wrangling"
+author: "Eric R. Scott"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(boxr)
+```
+
+
+## Box authorization
+
+```{r}
+box_auth_service(token_text = Sys.getenv("BOX_TOKEN_TEXT"))
+dir_id <- "233031886906"
+box_setwd(dir_id)
+```
+
