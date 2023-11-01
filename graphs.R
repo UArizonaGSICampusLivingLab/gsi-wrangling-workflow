@@ -5,17 +5,16 @@ library(ggplot2)
 library(lubridate)
 
 #Import fvariables.csv from the github files 
-variables <- read_csv("variables.csv")
-#remove redundant number column I accidentally added when exporting the spreadsheet earlier
-cleandata = subset(variables, select = -...1)
+variables <- read_csv("variables1.csv")
 
-#how to identify values when the row numbers will change eac htime new data is read into the dataset?
+View(variables)
 
-View(cleandata)
+
+
 
 
 #start making graphs! 
-ggplot(data = cleandata, aes(x = datetime)) + 
+ggplot(data = variables, aes(x = datetime)) + 
   geom_line(aes(y = atmospheric_pressure.value), color = "red") +
   geom_line(aes(y = solar_radiation.value), color = "blue")
 
