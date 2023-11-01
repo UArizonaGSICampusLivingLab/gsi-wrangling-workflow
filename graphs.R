@@ -4,25 +4,19 @@ library(readr)
 library(ggplot2)
 library(lubridate)
 
-#Import fvariables.csv from the github files 
+#Import variables1.csv from the github files 
 variables <- read_csv("variables1.csv")
 
 View(variables)
 
 
 
-
-
 #start making graphs! 
 ggplot(data = variables, aes(x = datetime)) + 
-  geom_line(aes(y = atmospheric_pressure.value), color = "red") +
-  geom_line(aes(y = solar_radiation.value), color = "blue")
+  geom_line(aes(y = water_content.value), color = "red") 
 
-
-
-
-
-
+#issues with this 
+#ask about pulling the right practice data because this is not going to wokr most of the values are N?A's 
 
 
 
