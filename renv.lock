@@ -7,6 +7,10 @@
         "URL": "https://cct-datascience.r-universe.dev"
       },
       {
+        "Name": "r_universe",
+        "URL": "https://cct-datascience.r-universe.dev"
+      },
+      {
         "Name": "CRAN",
         "URL": "https://packagemanager.posit.co/cran/latest"
       }
@@ -1806,6 +1810,7 @@
         "httr2",
         "jsonlite",
         "lubridate",
+        "memoise",
         "purrr",
         "snakecase",
         "stringr",
@@ -1813,7 +1818,7 @@
         "tidyr",
         "uuid"
       ],
-      "Hash": "4a4db39e6d19452f2837aba524e6b0ad"
+      "Hash": "2a999464851f09ac6641d59c3450fd88"
     }
   }
 }
