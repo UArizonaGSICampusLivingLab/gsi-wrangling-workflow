@@ -1,0 +1,66 @@
+---
+title: "Green Stormwater Infrastructure Data Wrangling"
+author: "Eric R. Scott"
+date: "`r Sys.Date()`"
+output: html_document
+resource_files:
+- renv.lock
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+zentracloud::setZentracloudOptions(
+  token = Sys.getenv("ZENTRACLOUD_TOKEN"),
+  domain = "default"
+)
+
+library(boxr)
+library(jose)
+library(tidyverse)
+library(zentracloud)
+source("R/gsi_get_data.R")
+```
+
+<!--
+## First time publishing
+
+Publishing this workflow to Posit Connect will fail the first time because the environment variable `BOX_TOKEN_TEXT` is unset.  But, you still can find the app on viz.datascience.arizona.edu and add that env var.  Then, re-publish, and it should work.
+-->
+## Box authorization
+
+```{r}
+box_auth_service(token_text = Sys.getenv("BOX_TOKEN_TEXT"))
+dir_id <- "233031886906"
+box_setwd(dir_id)
+```
+
+## Wrangling workflow
+
+```{r}
+#list current files
+files <- box_ls() |> as_tibble()
+
+#does example_data.csv exist already?
+if ("example_data.csv" %in% files$name) {
+  old_dat <- files |> 
+    filter(name == "example_data.csv") |> 
+    pull(id) |> 
+    box_read_csv() |> 
+    as_tibble()
+  prev_end <- max(old_dat$datetime) |> with_tz("America/Phoenix")
+} else {
+  old_dat <- tibble()
+  prev_end <- ymd("2023-06-05", tz = "America/Phoenix") #first date of data
+}
+
+# Get the data and wrangle it
+
+all_df <- gsi_get_data(start = prev_end)
+
+# bind old to new and write back to box
+bind_rows(old_dat, all_df) |> 
+  distinct() |> #remove duplicate rows
+  arrange(datetime) |> 
+  box_write("example_data.csv")
+```
+

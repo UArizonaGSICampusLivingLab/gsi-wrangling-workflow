@@ -35,7 +35,7 @@ all_df <-
   mutate(
     port = str_remove(port, "port"),
     datetime = str_remove(datetime, "-07:00$") |>
-      ymd_hms(tz = "America/Phoenix",truncated = 3)
+      ymd_hms(tz = "America/Phoenix")
   ) |> 
   select(-timestamp_utc, -tz_offset) #redundant columns
 
@@ -79,5 +79,3 @@ weeks <- 52
 fs::as_fs_bytes(coef(m)[1]) + fs::as_fs_bytes(coef(m)[2]) * weeks
 
 #51.1M as .csv without joined metadata
-
-
