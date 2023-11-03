@@ -1,5 +1,5 @@
 gsi_get_data <- 
-  function(start, end = NULL, devices = c("z6-19484", "z6-20761", "z6-20764", "z6-20762", "z6-20763")) {
+  function(start, end = NULL, devices = c("z6-19484", "z6-19485", "z6-20761", "z6-20764", "z6-20762", "z6-20763")) {
 
     if (is.null(end)) {
       end <- lubridate::now()

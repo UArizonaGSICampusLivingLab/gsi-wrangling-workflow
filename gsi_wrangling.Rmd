@@ -43,7 +43,7 @@ files <- box_ls() |> as_tibble()
 #does example_data.csv exist already?
 if ("example_data.csv" %in% files$name) {
   old_dat <- files |> 
-    filter(name == "example_data.csv") |> 
+    filter(name == "gsi_living_lab_data.csv") |> 
     pull(id) |> 
     box_read_csv() |> 
     as_tibble()
@@ -61,6 +61,6 @@ all_df <- gsi_get_data(start = prev_end)
 bind_rows(old_dat, all_df) |> 
   distinct() |> #remove duplicate rows
   arrange(datetime) |> 
-  box_write("example_data.csv")
+  box_write("gsi_living_lab_data.csv")
 ```
 
