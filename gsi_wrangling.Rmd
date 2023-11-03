@@ -41,7 +41,7 @@ box_setwd(dir_id)
 files <- box_ls() |> as_tibble()
 
 #does example_data.csv exist already?
-if ("example_data.csv" %in% files$name) {
+if ("gsi_living_lab_data.csv" %in% files$name) {
   old_dat <- files |> 
     filter(name == "gsi_living_lab_data.csv") |> 
     pull(id) |> 
