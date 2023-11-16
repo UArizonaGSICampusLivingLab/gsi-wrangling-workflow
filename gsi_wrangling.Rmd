@@ -30,6 +30,7 @@ Publishing this workflow to Posit Connect will fail the first time because the e
 
 ```{r}
 box_auth_service(token_text = Sys.getenv("BOX_TOKEN_TEXT"))
+# box_auth() ## If you want to run locally use this instead of box_auth_service()
 dir_id <- "233031886906"
 box_setwd(dir_id)
 ```
