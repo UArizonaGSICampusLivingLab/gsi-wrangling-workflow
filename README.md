@@ -47,13 +47,16 @@ zentracloud::setZentracloudOptions(
 #### Box
 
 The Box API is accessed using the `boxr` package.
-You'll find instructions on creating an "app" and authenticating on the [`boxr` website](https://r-box.github.io/boxr/articles/boxr.html).
-This workflow uses a [service app](https://r-box.github.io/boxr/articles/boxr-app-service.html) to upload data to a shared box folder.
-You may need to request access to this service app from the Buzzard lab or you can create your own [interactive app](https://r-box.github.io/boxr/articles/boxr-app-interactive.html) if you're just interested in downloading existing files that have been shared with you.
+You'll find instructions on how to authenticate with Box on the [`boxr` website](https://r-box.github.io/boxr/articles/boxr.html).
 
-There is some code I used to set this up in `R/box_app_setup.R`.
-This creates a `.boxr-auth` file containing JSON.
-To get this to work with Posit Connect, however, I've copied the text of that file and added it to .Renviron as `BOX_TOKEN_TEXT`.
+If you're a collaborator just interested in running this code locally, you can follow [these instructions](https://r-box.github.io/boxr/articles/boxr-app-interactive.html) to authenticate to Box as a user (this is called an "interactive app", which is a little confusing).
+Once you've follwed those instructions and have added a `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET` to the `.Renviron` file, just be sure to replace `box_auth_service()` with `box_auth()` and you should be able to run the code in `gsi_wrangling.Rmd`.
+
+This automated workflow uses a [service app](https://r-box.github.io/boxr/articles/boxr-app-service.html) to upload data to a shared box folder when `gsi_wrangling.Rmd` is run on Posit Connect.
+If you need to change any settings or get credentials for this service app, you'll need to request access from Vanessa Buzzard or the CCT Data Science group.
+
+`R/box_app_setup.R` contains some code used when setting up the Box service app authentication (think of it like notes rather than a script to run).
+The only thing I've done differently from the `boxr` documentation is to copy the contents of the `.boxr-auth` file and added it as an environment variable `BOX_TOKEN_TEXT`.
 
 #### Posit Connect
 
