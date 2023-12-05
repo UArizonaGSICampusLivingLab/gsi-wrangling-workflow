@@ -46,8 +46,7 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
   old_dat <- files |> 
     filter(name == "gsi_living_lab_data.csv") |> 
     pull(id) |> 
-    box_read_csv() |> 
-    as_tibble()
+    box_read(read_fun = readr::read_csv)
   prev_end <- max(old_dat$datetime) |> with_tz("America/Phoenix")
 } else {
   old_dat <- tibble()
@@ -62,6 +61,6 @@ all_df <- gsi_get_data(start = prev_end)
 bind_rows(old_dat, all_df) |> 
   distinct() |> #remove duplicate rows
   arrange(datetime) |> 
-  box_write("gsi_living_lab_data.csv")
+  box_write("gsi_living_lab_data.csv", write_fun = readr::write_csv)
 ```
 
