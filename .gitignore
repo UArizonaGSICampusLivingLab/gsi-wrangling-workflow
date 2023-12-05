@@ -34,5 +34,5 @@ docs/
 po/*~
 # RStudio Connect folder
 rsconnect/
-# large files
-example_data.csv
+# data
+*.csv
