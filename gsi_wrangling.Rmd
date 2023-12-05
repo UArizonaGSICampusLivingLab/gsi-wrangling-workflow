@@ -59,6 +59,7 @@ all_df <- gsi_get_data(start = prev_end)
 
 # bind old to new and write back to box
 bind_rows(old_dat, all_df) |> 
+  filter(!is.na(sensor)) |> # this is somewhat redundant, but having this in gsi_get_data() only removes these from new data
   distinct() |> #remove duplicate rows
   arrange(datetime) |> 
   box_write("gsi_living_lab_data.csv", write_fun = readr::write_csv)
