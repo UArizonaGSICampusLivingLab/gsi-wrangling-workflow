@@ -57,7 +57,7 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 
 new_dat <- gsi_get_data(start = prev_end)
 
-# bind old to new and write back to box
+# bind old to new
 all_dat <- 
   bind_rows(old_dat, new_dat) |> 
   filter(!is.na(sensor)) |> # this is somewhat redundant, but having this in gsi_get_data() only removes these from new data
@@ -65,21 +65,15 @@ all_dat <-
   arrange(datetime) 
 ```
 
-Missing data due to a device being offline is only indicated by missing datetimes.  For easier nicer plotting, it's probably better to fill those missing datetimes in.
+Missing data due to a device being offline is only indicated by missing datetimes. This next chunk makes missing datetimes explicit.
 
 ```{r}
-#Create data frame of expected datetimes for all device, sensor, port combinations in the current data
-expected_datetimes <- 
-  expand_grid(
-    datetime = seq(min(all_dat$datetime), max(all_dat$datetime), by = "hour"),
-    device_sensor_port = unique(paste(all_dat$device_sn, all_dat$sensor, all_dat$port, sep = "_"))
-  ) |> 
-  separate_wider_delim(device_sensor_port, delim = "_", names = c("device_sn", "sensor", "port")) |> 
-  mutate(port = as.numeric(port))
-
-#Join to full data to add rows of NAs in all the data columns
-all_dat_final <- full_join(all_dat, expected_datetimes)
-
+all_dat_final <-
+  all_dat |> 
+  complete(
+    nesting(device_sn, sensor, port),
+    datetime = seq(min(datetime), max(datetime), by = "hour")
+  )
 ```
 
 
