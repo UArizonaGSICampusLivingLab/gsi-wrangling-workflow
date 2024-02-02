@@ -55,10 +55,12 @@ gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitu
     str_replace_all(pattern = 'NaN', replacement = '"NaN"') |> 
     fromJSON()
   
+  eto_units <- str_trim(output$data$metadata$units)
+  
   #add metadata to data where appropriate
   out_df <- as_tibble(output$data$readings)
   out_final <- out_df |> 
-    add_column(device_sn = device_sn, port = port_num) |> 
+    add_column(device_sn = device_sn, port = port_num, ETo.units = eto_units) |> 
     #rename to match other data columns
     rename(
       ETo.value = value,
@@ -72,3 +74,4 @@ gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitu
     select(device_sn, port, datetime, starts_with("ETo"))
   out_final
 }
+gsi_get_eto(device_sn = "z6-19484", wind_height = 2.1, elevation = 735, latitude = 32.231622)
