@@ -2,11 +2,17 @@ library(httr2)
 library(jsonlite)
 library(tidyverse)
 
+# Gould Simpson z6-20761 : Lat: 32.2294203 Long: -110.955557 Elevation: 746 m
+# Old Main z6-19484: Lat: 32.231622 Long: -110.9537758 Elevation: 735 m
+# PAS z6-20762 : Lat: 32.2294215 Long: -110.9541533 Elevation: 741 m
+
 
 device_sn <- "z6-19484"
 port_num <- 1
+lat <- 32.231622
+elev <- 735
 # model_type <- "ETo" #other option is ETr, so just hard-coded for now
-gsi_get_eto <- function(device_sn, port_num = 1, elevation = 806, latitude = 32.25, wind_measurement_height = 2) {
+gsi_get_eto <- function(device_sn, port_num = 1,  wind_measurement_height = 2, elevation, latitude) {
   #Create a request
   req <- 
     request("https://zentracloud.com/api/v4") |> 
@@ -62,7 +68,7 @@ gsi_get_eto <- function(device_sn, port_num = 1, elevation = 806, latitude = 32.
   out_final
 }
 #Then repeat for every device_sn
-eto <- gsi_get_eto(device_sn = "z6-19484")
+eto <- gsi_get_eto(device_sn = "z6-19484", elevation = elev, latitude = lat)
 eto
 
 #TODO write this as a separate .csv file to Box
