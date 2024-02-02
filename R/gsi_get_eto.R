@@ -1,18 +1,22 @@
-library(httr2)
-library(jsonlite)
-library(tidyverse)
-
-# Gould Simpson z6-20761 : Lat: 32.2294203 Long: -110.955557 Elevation: 746 m
-# Old Main z6-19484: Lat: 32.231622 Long: -110.9537758 Elevation: 735 m
-# PAS z6-20762 : Lat: 32.2294215 Long: -110.9541533 Elevation: 741 m
-
-
-device_sn <- "z6-19484"
-port_num <- 1
-lat <- 32.231622
-elev <- 735
-ht <- 2.1
-
+#' Get data from models endpoint
+#'
+#' Accesses the zentracloud API models endpoint (documented here:
+#' https://zentracloud.com/api/v3/documentation/?) and returns a tibble.  This
+#' function works for a single device only and returns data for the previous 30
+#' days.
+#' 
+#' @param device_sn Device ID
+#' @param port_num Port number for ATMOS sensor, currently 1 for all sites (this
+#'   is the default)
+#' @param wind_height Height of wind sensor from ground in meters
+#' @param elevation Elevation in meters
+#' @param latitude Latitude of device
+#'
+#' @return a tibble
+#' @examples
+#' #for Old Main
+#' gsi_get_eto(device_sn = "z6-19484", wind_height = 2.1, elevation = 735, latitude = 32.231622)
+#' 
 gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitude) {
   #Create a request
   req <- 
@@ -68,9 +72,3 @@ gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitu
     select(device_sn, port, datetime, starts_with("ETo"))
   out_final
 }
-# Then repeat for every device_sn
-eto <- gsi_get_eto(device_sn = "z6-19484", wind_height = ht, elevation = elev, latitude = lat)
-eto
-#TODO iterate over three sites and combine
-#TODO deal with duplicate values when running on successive days (i.e will only the newest value be different? Or will previous values update based on some sliding window or something?)
-#TODO add this to scheduled .Rmd and write data as a separate .csv file to Box

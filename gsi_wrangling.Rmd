@@ -19,6 +19,7 @@ library(jose)
 library(tidyverse)
 library(zentracloud)
 source("R/gsi_get_data.R")
+source("R/gsi_get_eto.R")
 ```
 
 <!--
@@ -37,11 +38,13 @@ box_setwd(dir_id)
 
 ## Wrangling workflow
 
+### Hourly data
+
 ```{r update_data}
 #list current files
 files <- box_ls() |> as_tibble()
 
-#does example_data.csv exist already?
+#does gsi_living_lab_data.csv exist already?
 if ("gsi_living_lab_data.csv" %in% files$name) {
   old_dat <- files |> 
     filter(name == "gsi_living_lab_data.csv") |> 
@@ -76,10 +79,33 @@ all_dat_final <-
   )
 ```
 
+### ETo
+
+Get site_info.csv from box
+
+```{r}
+site_info <- 
+  files |> 
+  filter(name == "site_info.csv") |> 
+  pull(id) |> 
+  box_read()
+inputs <-
+  site_info |> 
+  filter(sensor_model == "ATMOS41") |> 
+  select(device_sn, port_num = port, wind_height = depth_height_m, elevation = Elevation, latitude = Latitude)
+eto_list <- pmap(inputs, gsi_get_eto)
+eto_df <- list_rbind(eto_list)
+```
+
+TODO:
+
+- read in previous ETo data
+- combine new with previous
 
 ## Write data to box
 
 ```{r}
 box_write(all_dat_final, "gsi_living_lab_data.csv", write_fun = readr::write_csv)
+box_write(eto_df, "gsi_living_lab_ETo.csv", write_fun = readr::write_csv)
 ```
 
