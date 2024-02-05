@@ -18,6 +18,8 @@ library(boxr)
 library(jose)
 library(tidyverse)
 library(zentracloud)
+library(httr2)
+library(jsonlite)
 source("R/gsi_get_data.R")
 source("R/gsi_get_eto.R")
 ```
@@ -34,6 +36,8 @@ box_auth_service(token_text = Sys.getenv("BOX_TOKEN_TEXT"))
 # box_auth() ## If you want to run locally use this instead of box_auth_service()
 dir_id <- "233031886906"
 box_setwd(dir_id)
+#list current files
+files <- box_ls() |> as_tibble()
 ```
 
 ## Wrangling workflow
@@ -41,9 +45,6 @@ box_setwd(dir_id)
 ### Hourly data
 
 ```{r update_data}
-#list current files
-files <- box_ls() |> as_tibble()
-
 #does gsi_living_lab_data.csv exist already?
 if ("gsi_living_lab_data.csv" %in% files$name) {
   old_dat <- files |> 
@@ -89,23 +90,46 @@ site_info <-
   filter(name == "site_info.csv") |> 
   pull(id) |> 
   box_read()
+
 inputs <-
   site_info |> 
   filter(sensor_model == "ATMOS41") |> 
   select(device_sn, port_num = port, wind_height = depth_height_m, elevation = Elevation, latitude = Latitude)
-eto_list <- pmap(inputs, gsi_get_eto)
-eto_df <- list_rbind(eto_list)
 ```
 
-TODO:
+Use site info to get most recent ETo values for all locations from API
 
-- read in previous ETo data
-- combine new with previous
+```{r}
+eto_list <- pmap(inputs, gsi_get_eto)
+eto_new <- list_rbind(eto_list)
+```
+
+Read in previously saved ETo data and join.  Joining rather than binding rows here because there will be a lot of overlap and this saves the trouble of removing duplicate dates. If column names change (either manually editing the file on Box or changes to `gsi_get_eto()`), this will break or create confusing column names.  I've made this chunk will error if the colnames aren't what are expected because dealing with a change like this will require some manual finessing to harmonize the old and new data.
+
+```{r}
+eto_prev <- 
+  files |> 
+  filter(name == "gsi_living_lab_ETo.csv") |> 
+  pull(id) |> 
+  box_read(read_fun = readr::read_csv)
+
+# left_join(eto_prev, eto_new) 
+# just checking that old values didn't change.  If they did, then the join_by()
+# wouldn't include ETo.value and the joined dataframe wouldn't have the same
+# number of rows/columns as the original
+
+eto_full <-
+  full_join(eto_prev, eto_new) |> 
+  arrange(datetime, device_sn)
+
+stopifnot(colnames(eto_full) == c("device_sn", "port", "datetime", "ETo.value", "ETo.error_flag", "ETo.error_description", "ETo.units"))
+```
+
 
 ## Write data to box
 
 ```{r}
 box_write(all_dat_final, "gsi_living_lab_data.csv", write_fun = readr::write_csv)
-box_write(eto_df, "gsi_living_lab_ETo.csv", write_fun = readr::write_csv)
+box_write(eto_full, "gsi_living_lab_ETo.csv", write_fun = readr::write_csv)
 ```
 

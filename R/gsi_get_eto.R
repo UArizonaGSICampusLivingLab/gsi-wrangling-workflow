@@ -74,4 +74,3 @@ gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitu
     select(device_sn, port, datetime, starts_with("ETo"))
   out_final
 }
-gsi_get_eto(device_sn = "z6-19484", wind_height = 2.1, elevation = 735, latitude = 32.231622)
