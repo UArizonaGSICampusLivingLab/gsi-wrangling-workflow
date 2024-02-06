@@ -37,7 +37,8 @@ gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitu
       Authorization = paste("Token", Sys.getenv("ZENTRACLOUD_TOKEN")),
       accept = "application/json"
     ) |> 
-    req_throttle(rate = 1/62) #ridiculously slow API limit
+    req_throttle(rate = 1/62) |> #ridiculously slow API limit
+    req_retry() #retry in case throttle doesn't work
   
   #View the request
   req
