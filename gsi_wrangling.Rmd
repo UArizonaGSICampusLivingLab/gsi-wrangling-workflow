@@ -71,20 +71,20 @@ all_dat <-
 
 Missing data due to a device being offline is only indicated by missing datetimes. This next chunk makes missing datetimes explicit.
 
-```{r}
+```{r explicit_na}
 all_dat_final <-
   all_dat |> 
   complete(
     nesting(device_sn, sensor, port),
     datetime = seq(min(datetime), max(datetime), by = "hour")
-  )
+  ) |> distinct() #just make extra sure there aren't duplicates
 ```
 
 ### ETo
 
 Get site_info.csv from box
 
-```{r}
+```{r eto_siteinfo}
 site_info <- 
   files |> 
   filter(name == "site_info.csv") |> 
@@ -99,36 +99,44 @@ inputs <-
 
 Use site info to get most recent ETo values for all locations from API
 
-```{r}
+```{r eto_get}
 eto_list <- pmap(inputs, gsi_get_eto)
 eto_new <- list_rbind(eto_list)
 ```
 
 Read in previously saved ETo data and join.  Joining rather than binding rows here because there will be a lot of overlap and this saves the trouble of removing duplicate dates. If column names change (either manually editing the file on Box or changes to `gsi_get_eto()`), this will break or create confusing column names.  I've made this chunk will error if the colnames aren't what are expected because dealing with a change like this will require some manual finessing to harmonize the old and new data.
 
-```{r}
-eto_prev <- 
-  files |> 
-  filter(name == "gsi_living_lab_ETo.csv") |> 
-  pull(id) |> 
-  box_read(read_fun = readr::read_csv)
-
-# left_join(eto_prev, eto_new) 
-# just checking that old values didn't change.  If they did, then the join_by()
-# wouldn't include ETo.value and the joined dataframe wouldn't have the same
-# number of rows/columns as the original
+```{r eto_update}
+if ("gsi_living_lab_ETo.csv" %in% files$name) {
+  eto_prev <- 
+    files |> 
+    filter(name == "gsi_living_lab_ETo.csv") |> 
+    pull(id) |> 
+    box_read(read_fun = readr::read_csv)
+} else {
+  eto_prev <- tibble()
+}
 
 eto_full <-
-  full_join(eto_prev, eto_new) |> 
-  arrange(datetime, device_sn)
+  bind_rows(eto_prev, eto_new) |> 
+  arrange(datetime, device_sn) |> 
+  distinct() #keep only one row per site per date
 
-stopifnot(colnames(eto_full) == c("device_sn", "port", "datetime", "ETo.value", "ETo.error_flag", "ETo.error_description", "ETo.units"))
+#check that there is just one unique value per site per date
+ns <- 
+  eto_full |>
+  count(device_sn, datetime) |>
+  pull(n)
+if(!all(ns == 1)) {
+  stop("More than one unique value for ETo! Reconcile before publishing data")
+}
+
 ```
 
 
 ## Write data to box
 
-```{r}
+```{r write_box}
 box_write(all_dat_final, "gsi_living_lab_data.csv", write_fun = readr::write_csv)
 box_write(eto_full, "gsi_living_lab_ETo.csv", write_fun = readr::write_csv)
 ```
