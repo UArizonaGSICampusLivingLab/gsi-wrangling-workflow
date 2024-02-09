@@ -103,8 +103,13 @@ Use site info to get most recent ETo values for all locations from API
 eto_list <- pmap(inputs, gsi_get_eto)
 eto_new <- list_rbind(eto_list)
 ```
+The last date of `eto_new` is not reliable as of 02-09-2024.  It has different values compared to the same date in `eto_prev.`  My guess is this is due to partial days being summarized instead of rounding off to the nearest day when getting the prev 30 days.  I'll just remove it.
 
-Read in previously saved ETo data and join.  Joining rather than binding rows here because there will be a lot of overlap and this saves the trouble of removing duplicate dates. If column names change (either manually editing the file on Box or changes to `gsi_get_eto()`), this will break or create confusing column names.  I've made this chunk will error if the colnames aren't what are expected because dealing with a change like this will require some manual finessing to harmonize the old and new data.
+```{r}
+eto_new <- eto_new |> filter(datetime != min(datetime, na.rm = TRUE))
+```
+
+Read in previously saved ETo data and join.
 
 ```{r eto_update}
 if ("gsi_living_lab_ETo.csv" %in% files$name) {
