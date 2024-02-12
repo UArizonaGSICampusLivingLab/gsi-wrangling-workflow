@@ -18,7 +18,10 @@ library(boxr)
 library(jose)
 library(tidyverse)
 library(zentracloud)
+library(httr2)
+library(jsonlite)
 source("R/gsi_get_data.R")
+source("R/gsi_get_eto.R")
 ```
 
 <!--
@@ -33,15 +36,16 @@ box_auth_service(token_text = Sys.getenv("BOX_TOKEN_TEXT"))
 # box_auth() ## If you want to run locally use this instead of box_auth_service()
 dir_id <- "233031886906"
 box_setwd(dir_id)
+#list current files
+files <- box_ls() |> as_tibble()
 ```
 
 ## Wrangling workflow
 
-```{r update_data}
-#list current files
-files <- box_ls() |> as_tibble()
+### Hourly data
 
-#does example_data.csv exist already?
+```{r update_data}
+#does gsi_living_lab_data.csv exist already?
 if ("gsi_living_lab_data.csv" %in% files$name) {
   old_dat <- files |> 
     filter(name == "gsi_living_lab_data.csv") |> 
@@ -67,7 +71,7 @@ all_dat <-
 
 Missing data due to a device being offline is only indicated by missing datetimes. This next chunk makes missing datetimes explicit.
 
-```{r}
+```{r explicit_na}
 all_dat_final <-
   all_dat |> 
   complete(
@@ -77,10 +81,69 @@ all_dat_final <-
   distinct() #remove duplicate rows again, just in case.
 ```
 
+### ETo
+
+Get site_info.csv from box
+
+```{r eto_siteinfo}
+site_info <- 
+  files |> 
+  filter(name == "site_info.csv") |> 
+  pull(id) |> 
+  box_read()
+
+inputs <-
+  site_info |> 
+  filter(sensor_model == "ATMOS41") |> 
+  select(device_sn, port_num = port, wind_height = depth_height_m, elevation = Elevation, latitude = Latitude)
+```
+
+Use site info to get most recent ETo values for all locations from API
+
+```{r eto_get}
+eto_list <- pmap(inputs, gsi_get_eto)
+eto_new <- list_rbind(eto_list)
+```
+The last date of `eto_new` is not reliable as of 02-09-2024.  It has different values compared to the same date in `eto_prev.`  My guess is this is due to partial days being summarized instead of rounding off to the nearest day when getting the prev 30 days.  I'll just remove it.
+
+```{r}
+eto_new <- eto_new |> filter(datetime != min(datetime, na.rm = TRUE))
+```
+
+Read in previously saved ETo data and join.
+
+```{r eto_update}
+if ("gsi_living_lab_ETo.csv" %in% files$name) {
+  eto_prev <- 
+    files |> 
+    filter(name == "gsi_living_lab_ETo.csv") |> 
+    pull(id) |> 
+    box_read(read_fun = readr::read_csv)
+} else {
+  eto_prev <- tibble()
+}
+
+eto_full <-
+  bind_rows(eto_prev, eto_new) |> 
+  arrange(datetime, device_sn) |> 
+  distinct() #keep only one row per site per date
+
+#check that there is just one unique value per site per date
+ns <- 
+  eto_full |>
+  count(device_sn, datetime) |>
+  pull(n)
+if(!all(ns == 1)) {
+  stop("More than one unique value for ETo! Reconcile before publishing data")
+}
+
+```
+
 
 ## Write data to box
 
-```{r}
+```{r write_box}
 box_write(all_dat_final, "gsi_living_lab_data.csv", write_fun = readr::write_csv)
+box_write(eto_full, "gsi_living_lab_ETo.csv", write_fun = readr::write_csv)
 ```
 

@@ -71,6 +71,7 @@ in `R/` you will find:
 -   `box_app_setup.R`: some code I used when first setting up Box authentication. Not to be run again, but just as an example.
 -   `estimate_data_size.R`: a script for extrapolating data size
 -   `gsi_get_data.R`: a function, `gsi_get_data()`, for downloading and wrangling data from the Zentra Cloud API.
+-   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
 
 ### Contributors
 
@@ -78,3 +79,5 @@ in `R/` you will find:
 
 -   Eric Scott
 -   Malcolm Barrios
+-   Kristina Riemer
+-   Vanessa Buzzard
