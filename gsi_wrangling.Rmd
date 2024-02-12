@@ -77,7 +77,8 @@ all_dat_final <-
   complete(
     nesting(device_sn, sensor, port),
     datetime = seq(min(datetime), max(datetime), by = "hour")
-  ) |> distinct() #just make extra sure there aren't duplicates
+  ) |> 
+  distinct() #remove duplicate rows again, just in case.
 ```
 
 ### ETo
