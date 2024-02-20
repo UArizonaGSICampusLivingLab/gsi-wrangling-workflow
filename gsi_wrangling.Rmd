@@ -59,8 +59,20 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 
 # Get the data and wrangle it
 
-new_dat <- gsi_get_data(start = prev_end)
+new_dat <-
+  gsi_get_data(start = prev_end) |> 
+  #calculate wind chill
+   mutate(
+     #TODO: should this ifelse() logic be in the calc_wind_chill function?
+    wind_chill.value = ifelse(
+      air_temperature.value < 10 & wind_speed.value > 1.34112, 
+      calc_wind_chill(air_temperature.value, wind_speed.value),
+      air_temperature.value
+    ),
+    #TODO calculate adjusted temp
+   )
 
+#TODO calculate wind chill and adjusted temp on full data set ONCE
 # bind old to new
 all_dat <- 
   bind_rows(old_dat, new_dat) |> 
