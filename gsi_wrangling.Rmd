@@ -58,13 +58,15 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 }
 
 # Get the data and wrangle it
-#TODO: create air_temperature_f.value and wind_speed_mph.value columns
+#TODO: create air_temperature_f.value and wind_speed_mph.value columns?
 new_dat <-
   gsi_get_data(start = prev_end) |> 
-  #calculate wind chill
-   mutate(wind_chill.value = 
-      calc_wind_chill(air_temperature_f.value, wind_speed_mph.value),
-    #TODO calculate adjusted temp
+  #calculate "feels like" with wind chill and heat index
+   mutate(
+     # wind_chill.value = calc_wind_chill(air_temperature_f.value, wind_speed_mph.value),
+     # heat_index.value = calc_hi(air_temperature.value, vapor_pressure.value),
+     feels_like.value = calc_hi(air_temperature.value, vapor_pressure.value) |> 
+       calc_wind_chill(wind_speed.value) #TODO current version needs units converted to F and mph.  Do this in calc_wind_chill()?
    )
 
 #TODO calculate wind chill and adjusted temp on full data set ONCE
