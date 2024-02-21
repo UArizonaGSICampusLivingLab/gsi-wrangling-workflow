@@ -52,10 +52,11 @@ calc_hi <- function(temp, vp) {
 #'
 #' @return numeric vector of %RH values between 0 and 100
 calc_rh <- function(vp_kpa, temp_c) {
-  if(temp_c > 0) {
-    vp_s <- (exp(34.494 - ((4924.99)/(temp_c + 237.1))))/(temp_c + 105)^1.57 * 0.001
-  } else {
-    vp_s <- (exp(43.494 - (6545.8)/(temp_c + 278)))/(t + 868)^2 * 0.001
-  }
+  vp_s <- ifelse(
+    temp_c > 0,
+    (exp(34.494 - ((4924.99)/(temp_c + 237.1))))/(temp_c + 105)^1.57 * 0.001,
+    (exp(43.494 - (6545.8)/(temp_c + 278)))/(temp_c + 868)^2 * 0.001
+  )
+  #return:
   100 * vp/vp_s
 }
