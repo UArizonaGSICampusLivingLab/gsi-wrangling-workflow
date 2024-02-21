@@ -63,10 +63,10 @@ new_dat <-
   gsi_get_data(start = prev_end) |> 
   #calculate "feels like" with wind chill and heat index
    mutate(
-     # wind_chill.value = calc_wind_chill(air_temperature_f.value, wind_speed_mph.value),
+     # wind_chill.value = calc_wind_chill(air_temperature.value, wind_speed.value),
      # heat_index.value = calc_hi(air_temperature.value, vapor_pressure.value),
      feels_like.value = calc_hi(air_temperature.value, vapor_pressure.value) |> 
-       calc_wind_chill(wind_speed.value) #TODO current version needs units converted to F and mph.  Do this in calc_wind_chill()?
+       calc_wind_chill(wind_speed.value) |> round(digits = 1)
    )
 
 #TODO calculate wind chill and adjusted temp on full data set ONCE
