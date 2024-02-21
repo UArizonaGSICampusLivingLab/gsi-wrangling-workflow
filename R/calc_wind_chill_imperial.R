@@ -10,7 +10,7 @@
 #' @param wind_mph wind speed in miles per hour
 #'
 #' @return numeric vector of wind chill temps
-calc_wind_chill <- function(temp_f, wind_mph) {
+calc_wind_chill_imperial <- function(temp_f, wind_mph) {
   
   #NWS version
   chill_f <- 35.74 + 0.6215 * temp_f - 33.75 * wind_mph^0.16 + 0.4275 * temp_f * wind_mph^0.16
