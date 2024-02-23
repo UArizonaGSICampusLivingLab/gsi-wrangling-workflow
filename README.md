@@ -4,7 +4,7 @@
 
 This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://udallcenter.arizona.edu/news/campus-living-lab-creating-more-sustainable-campus-designing-building-and-monitoring-green) at University of Arizona.
 The data set is available upon request.
-Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6) <!-- eventually add a link to request form -->
+Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6).
 
 ## How does it work?
 
