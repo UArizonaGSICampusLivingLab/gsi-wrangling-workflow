@@ -81,6 +81,7 @@ in `R/` you will find:
 -   `estimate_data_size.R`: a script for extrapolating data size
 -   `gsi_get_data.R`: a function, `gsi_get_data()`, for downloading and wrangling data from the Zentra Cloud API.
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
+-   Other functions used to calculate variables such as heat index, wind chill, etc.
 
 ### Contributors
 

@@ -24,6 +24,7 @@ site_info <- files |>
 
 data_full <- left_join(data, site_info)
 
+# Add adjusted temp column to hourly data
 df_adj <- data_full |> 
   mutate(
     feels_like.value = calc_hi(air_temperature.value, vapor_pressure.value) |> 

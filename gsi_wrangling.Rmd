@@ -58,19 +58,9 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 }
 
 # Get the data and wrangle it
-#TODO: create air_temperature_f.value and wind_speed_mph.value columns?
 new_dat <-
-  gsi_get_data(start = prev_end) |> 
-  #calculate "feels like" with wind chill and heat index
-   mutate(
-     # wind_chill.value = calc_wind_chill(air_temperature.value, wind_speed.value),
-     # heat_index.value = calc_hi(air_temperature.value, vapor_pressure.value),
-     feels_like.value = calc_hi(air_temperature.value, vapor_pressure.value) |> 
-       calc_wind_chill(wind_speed.value) |> round(digits = 1)
-   )
+  gsi_get_data(start = prev_end) 
 
-#TODO calculate wind chill and adjusted temp on full data set ONCE
-# bind old to new
 all_dat <- 
   bind_rows(old_dat, new_dat) |> 
   filter(!is.na(sensor)) |> # this is somewhat redundant, but having this in gsi_get_data() only removes these from new data
