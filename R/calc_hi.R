@@ -58,5 +58,5 @@ calc_rh <- function(vp_kpa, temp_c) {
     (exp(43.494 - (6545.8)/(temp_c + 278)))/(temp_c + 868)^2 * 0.001
   )
   #return:
-  100 * vp/vp_s
+  100 * vp_kpa/vp_s
 }

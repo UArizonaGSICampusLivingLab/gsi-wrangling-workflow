@@ -36,11 +36,20 @@ df_adj |>
   select(datetime, air_temperature.value, feels_like.value) |> 
   filter(air_temperature.value != feels_like.value) |> 
   count(date(datetime))
-#13 days, all in winter, where the "feels like" temp is different than the real temp
+
 
 df_adj |> 
   filter(air_temperature.value != feels_like.value) |> 
   ggplot(aes(x = air_temperature.value, y = feels_like.value, color = site)) +
   geom_point(alpha = 0.6) +
   geom_abline()
+
+df_adj |> 
+  filter(feels_like.value < air_temperature.value) |> 
+  count(site)
 #mostly Gould Simpson that gets the wind chill!
+
+df_adj |> 
+  filter(feels_like.value > air_temperature.value) |> 
+  count(site)
+#mostly Old Main that feels hotter than it is

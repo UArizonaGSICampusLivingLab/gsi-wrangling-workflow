@@ -12,10 +12,14 @@
 #' @return numeric vector of wind chill temps
 calc_wind_chill <- function(temp, wind_speed) {
   #convert from C to F
-  temp_f <- units::set_units(temp, "degC") |> units::set_units("degF") |> as.numeric()
+  temp_f <- 
+    units::set_units(temp, "degC") |>
+    units::set_units("degF") |> 
+    as.numeric()
   
   #convert mps to miles/hr
-  wind_mph <- units::set_units(wind_speed, "m/s") |> units::set_units("miles/hr") |> as.numeric()
+  wind_mph <- 
+    units::set_units(wind_speed, "m/s") |> units::set_units("miles/hr") |> as.numeric()
   
   #NWS version
   chill_f <- 35.74 + 0.6215 * temp_f - 33.75 * wind_mph^0.16 + 0.4275 * temp_f * wind_mph^0.16
@@ -35,3 +39,4 @@ calc_wind_chill <- function(temp, wind_speed) {
 
 #min temp and max wind speed
 # calc_wind_chill(-2, 6.1)
+
