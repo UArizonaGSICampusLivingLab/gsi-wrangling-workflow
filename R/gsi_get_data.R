@@ -11,7 +11,12 @@ gsi_get_data <-
     
   # Occasionally the API returns a "429 - Too Many Requests" error despite rate limiting being built into getReadings(), so we create a version that will retry on error
     insistent_getReadings <- 
-      purrr::insistently(getReadings, quiet = FALSE)
+      purrr::insistently(getReadings,
+                         rate = rate_backoff(
+                           pause_cap = 90,
+                           max_times = 5,
+                         ), 
+                         quiet = FALSE)
     
   readings_all <- 
     # provide an "anonymous function" to map() to iterate over `devices`
