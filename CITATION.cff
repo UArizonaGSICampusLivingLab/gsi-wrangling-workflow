@@ -11,7 +11,7 @@ message: >-
   citation information on the data request form 
   <https://forms.gle/63qWCybhvHaHunuH6>.
 type: software
-version: 0.0.1
+version: 0.1.0
 authors:
   - given-names: Eric R
     family-names: Scott
