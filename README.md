@@ -4,7 +4,7 @@
 
 This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://udallcenter.arizona.edu/news/campus-living-lab-creating-more-sustainable-campus-designing-building-and-monitoring-green) at University of Arizona.
 The data set is available upon request.
-Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6) <!-- eventually add a link to request form -->
+Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6).
 
 ## How does it work?
 
@@ -81,5 +81,6 @@ in `R/` you will find:
 -   `estimate_data_size.R`: a script for extrapolating data size
 -   `gsi_get_data.R`: a function, `gsi_get_data()`, for downloading and wrangling data from the Zentra Cloud API.
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
+-   Other functions used to calculate variables such as heat index, wind chill, etc.
 
 
