@@ -68,7 +68,7 @@ new_dat <-
 
 Add columns for adjusted temperature (wind chill and heat index) and plant available water.
 
-```{r}
+```{r calc_vars}
 new_dat <- 
   new_dat |>
   mutate(
@@ -81,7 +81,7 @@ new_dat <-
 
 #### Append existing data
 
-```{r update_data}
+```{r append_new_data}
 all_dat <- 
   bind_rows(old_dat, new_dat) |> 
   filter(!is.na(sensor)) |> # this is somewhat redundant, but having this in gsi_get_data() only removes these from new data
@@ -124,6 +124,7 @@ Use site info to get most recent ETo values for all locations from API
 eto_list <- pmap(inputs, gsi_get_eto)
 eto_new <- list_rbind(eto_list)
 ```
+
 The last date of `eto_new` is not reliable as of 02-09-2024.  It has different values compared to the same date in `eto_prev.`  My guess is this is due to partial days being summarized instead of rounding off to the nearest day when getting the prev 30 days.  I'll just remove it.
 
 ```{r}
