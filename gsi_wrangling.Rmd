@@ -22,6 +22,8 @@ library(httr2)
 library(jsonlite)
 source("R/gsi_get_data.R")
 source("R/gsi_get_eto.R")
+source("R/calc_hi.R")
+source("R/calc_wind_chill.R")
 ```
 
 <!--
@@ -59,8 +61,27 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 
 # Get the data and wrangle it
 new_dat <-
-  gsi_get_data(start = prev_end) 
+  gsi_get_data(start = prev_end)
+```
 
+#### Add calculated variables
+
+Add columns for adjusted temperature (wind chill and heat index) and plant available water.
+
+```{r}
+new_dat <- 
+  new_dat |>
+  mutate(
+    air_temperature_adj.value = calc_hi(air_temperature.value, relative_humidity.value) |>
+      calc_wind_chill(wind_speed.value) |>
+      round(digits = 1),
+    paw.value = (water_content.value - 0.06) / 0.11 * 100
+)
+```
+
+#### Append existing data
+
+```{r update_data}
 all_dat <- 
   bind_rows(old_dat, new_dat) |> 
   filter(!is.na(sensor)) |> # this is somewhat redundant, but having this in gsi_get_data() only removes these from new data
