@@ -1,0 +1,202 @@
+---
+title: "Archive Data on Zenodo"
+author: "Eric R. Scott"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Load Packages
+
+```{r setup}
+library(boxr)
+library(httr2)
+library(purrr)
+library(fs)
+box_auth_service(token_text = Sys.getenv("BOX_TOKEN_TEXT"))
+
+library(jsonlite) #for testing
+```
+
+## Set base URL for API requests
+
+```{r}
+req_base <- 
+  request("https://sandbox.zenodo.org/api/") |>
+  req_url_path_append("deposit", "depositions") |> 
+  req_auth_bearer_token(token = Sys.getenv("ZENODO_TOKEN"))
+```
+
+## Initial Release (do once only?)
+
+### Create metadata
+
+TODO: eventually get this metadata from an easier-to-edit YAML file?
+
+See deposit metadata list here https://developers.zenodo.org/?python#depositions
+
+There are many other non-required fields that may be useful
+
+
+```{r}
+start_version <- "1.0.0"
+
+metadata <- list( 
+  upload_type = "dataset",
+  publication_date = Sys.Date(),
+  #TODO: change title
+  title = paste0("Green Stormwater Infrastructure Data v", start_version),
+  creators = list( #TODO alternately, contributors with contributor type? Test to see if creators is required
+    list(
+      name = "Vanessa Buzzard",
+      affiliation = "University of Arizona, School of Natural Resources and the Environment",
+      orcid = "0000-0003-2929-0833"
+    )#,
+    # list(
+    #   name = "Author 2",
+    #   affiliation = "University of Arizona, department",
+    #   orcid = "0000-0000-0000-0000"
+    # )
+  ),
+  description = "This dataset is generated ...", #TODO add abstract here
+  access_right = "restricted", #TODO figure out how "restricted" actually works from a users POV
+  access_conditions = "Please fill out this form to request access to the data: https://forms.gle/63qWCybhvHaHunuH6",
+  license = "cc-zero", #TODO choose correct license
+  keywords = c("meterology", "microclimate", "campus living lab"), #TODO edit these
+  version = "1.0.0" #automatic releases should only update patch, manual releases might update major or minor versions if there are changes to the structure of the data or minor bugs fixed, respectively
+)
+toJSON(metadata,auto_unbox = TRUE, pretty = TRUE)
+```
+### Create new record
+
+```{r}
+req_post <- 
+  req_base |> 
+  req_method("POST") |> 
+  req_body_json(data = list(metadata = metadata))
+req_post |> req_dry_run()
+```
+
+```{r}
+resp_new_deposit <-
+  req_post |> 
+  req_perform()
+```
+
+```{r}
+new_deposit <- 
+  resp_new_deposit |> 
+  resp_body_json()
+
+```
+
+### Attach data
+
+Download most recent data from Box and create a .zip file for upload
+
+```{r box-dl}
+dir_id <- "250527085917"
+box_setwd(dir_id)
+#list current files
+files <- box_ls() |> as.data.frame()
+
+#download to tempdir
+dir <- fs::path_temp()
+dir_create(dir)
+withr::defer(dir_delete(dir))
+
+walk(files$id, \(x) box_dl(x, local_dir = dir, overwrite = TRUE))
+#zip the whole dir
+zip_path <- path(dir, "gsi_data.zip")
+zip(zip_path, files = dir_ls(dir))
+```
+
+Use new Zenodo API to upload file directly to bucket link
+
+```{r}
+bucket_url <- new_deposit$links$bucket
+req_put <- request(bucket_url) |> 
+  req_url_path_append(path_file(zip_path)) |> 
+  req_auth_bearer_token(token = Sys.getenv("ZENODO_TOKEN")) |> 
+  req_method("PUT") |> 
+  req_body_file(zip_path)
+
+req_put |> req_dry_run()
+```
+```{r}
+resp_put <- req_put |> req_perform()
+resp_put |> resp_body_json()  
+```
+
+### Publish
+
+```{r}
+dep_id <- new_deposit$id
+req_publish <-
+  req_base |> 
+  req_url_path_append(dep_id, "actions", "publish") |> 
+  req_body_json(list()) |> 
+  req_method("POST")
+req_publish |> req_dry_run()
+resp_publish <- req_publish |> req_perform()
+```
+
+## Subsequent releases
+
+Start with existing deposit ID, keeping the metadata the same except for `publication_date` and `version`
+
+```{r}
+dep_id <- 33103
+#TODO get prev version and increment
+req_new_version <- 
+  req_base |> 
+  req_url_path_append(dep_id, "actions", "newversion") |> 
+  req_body_json(list(metadata = list(
+    publication_date = Sys.Date()
+  ))) |> 
+  req_method("POST")
+
+resp_new_version <- req_new_version |> req_perform()
+new_version <- resp_new_version |> resp_body_json()
+```
+
+
+
+```{r box-dl}
+dir_id <- "250527085917"
+box_setwd(dir_id)
+#list current files
+files <- box_ls() |> as.data.frame()
+
+#download to tempdir
+dir <- fs::path_temp()
+dir_create(dir)
+withr::defer(dir_delete(dir))
+
+walk(files$id, \(x) box_dl(x, local_dir = dir, overwrite = TRUE))
+#zip the whole dir
+zip_path <- path(dir, "gsi_data.zip")
+zip(zip_path, files = dir_ls(dir))
+```
+```{r}
+bucket_url <- new_version$links$bucket
+req_put <- request(bucket_url) |> 
+  req_url_path_append(path_file(zip_path)) |> 
+  req_auth_bearer_token(token = Sys.getenv("ZENODO_TOKEN")) |> 
+  req_method("PUT") |> 
+  req_body_file(zip_path)
+
+req_put |> req_dry_run()
+req_put |> req_perform()
+```
+
+```{r}
+req_publish <-
+  req_base |> 
+  req_url_path_append(new_version$id, "actions", "publish") |> 
+  req_body_json(list()) |> 
+  req_method("POST")
+req_publish |> req_dry_run()
+resp_publish <- req_publish |> req_perform()
+resp_publish
+```
+
