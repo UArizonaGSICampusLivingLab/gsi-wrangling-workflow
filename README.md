@@ -10,8 +10,10 @@ Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHu
 
 ![](flowchart.png)
 
-This repository houses `gsi_wrangling.Rmd` which is published to Posit Connect as a scheduled workflow running daily at noon.
-This .Rmd file contains code to pull the most recent data for the Campus Living Lab sites from [ZentraCloud](https://zentracloud.com/), wrangle the data, and append it to a .csv file stored on Box.
+This repository houses `gsi_wrangling.Rmd` and `gsi_archive.Rmd` which are both published (manually) to Posit Connect as scheduled workflows.
+`gsi_wrangling.Rmd` is run daily and to pull the most recent data for the Campus Living Lab sites from [ZentraCloud](https://zentracloud.com/), wrangle the data, and append it to a .csv file stored on Box.
+`gsi_archive.Rmd` is run monthly to pull the most recent data and metadata from Box and upload it to Zenodo as a new version of [10.5281/zenodo.10823037](https://zenodo.org/doi/10.5281/zenodo.10823037).
+\
 The [gsi-dashboard repository](https://github.com/UArizonaGSICampusLivingLab/gsi-dashboard) contains code for a [Shiny](https://shiny.posit.co/) app that is automatically deployed to Posit Connect (using GitHub Actions) when updates are made to the main branch.
 This Shiny app reads in the data from Box on start-up and provides interactive visualizations of the data.
 
@@ -69,9 +71,9 @@ The only thing I've done differently from the `boxr` documentation is to copy th
 
 #### Posit Connect
 
-The automated workflow can be found in `gsi_wrangling.Rmd` and is published on University of Arizona's [Posit Connect server](https://datascience.arizona.edu/analytics-powerhouse/rstudio-connect) where it runs daily as a scheduled report.
+To publish `gsi_wrangling.Rmd` to [Posit Connect](https://datascience.arizona.edu/analytics-powerhouse/rstudio-connect) and have it work, you need to add secret [environment variables](https://docs.posit.co/connect/user/content-settings/#content-vars) for `ZENTRACLOUD_TOKEN` and `BOX_TOKEN_TEXT`.
 
-To publish `gsi_wrangling.Rmd` to Posit Connect and have it work, you need to add secret [environment variables](https://docs.posit.co/connect/user/content-settings/#content-vars) for `ZENTRACLOUD_TOKEN` and `BOX_TOKEN_TEXT`.
+Similarly, the `gsi_archive.Rmd` scheduled report requires the environment variables `BOX_TOKEN_TEXT` and `ZENODO_TOKEN` to work correctly.
 
 ### Files
 
@@ -82,5 +84,3 @@ in `R/` you will find:
 -   `gsi_get_data.R`: a function, `gsi_get_data()`, for downloading and wrangling data from the Zentra Cloud API.
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
 -   Other functions used to calculate variables such as heat index, wind chill, etc.
-
-
