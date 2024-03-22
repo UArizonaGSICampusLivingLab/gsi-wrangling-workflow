@@ -5,8 +5,6 @@ date: "`r Sys.Date()`"
 output: html_document
 resource_files:
 - renv.lock
-- notes/zenodo_no_request.png
-- notes/zenodo_request.png
 ---
 
 ## Load Packages
@@ -22,49 +20,20 @@ box_auth_service(token_text = Sys.getenv("BOX_TOKEN_TEXT"))
 
 ## Set base URL for API requests
 req_base <- 
-  request("https://sandbox.zenodo.org/api/") |>
+  request("https://zenodo.org/api/") |>
   req_url_path_append("deposit", "depositions") |> 
   req_auth_bearer_token(token = Sys.getenv("ZENODO_TOKEN"))
 ```
 
-## Initial Release
+## Find latest version
 
-Although we *can* create a new record via the Zenodo API, I think it will be easiest if the first deposit is created "manually" via upload to zenodo.org.
-Once there is a record ID, this script will get current contents of the Box folder, create a .zip file, and upload a new version to the record on Zenodo.
-
-There are two options for allowing access to a restricted dataset, I think.
-
--   No access form on Zenodo itself. This is the default, and you'll have to include in the description field a link to the google form. Then you can create unique links from Zenodo to send to individuals requesting access
-
-    ![A restricted Zenodo deposit without an access request form](notes/zenodo_no_request.png)
-
--   Enable access request form on Zenodo itself. People who find the Zenodo record will encounter a form, optionally with a custom message about access conditions. You can then manage requests in the Zenodo dashboard (I assume you'll get an email about them as well) and accepted request automatically get sent a unique link to access the record.
-
-    ![Data request form for an archive on Zenodo](notes/zenodo_request.png)
-
-Either way, take care of the following when uploading the initial deposit:
-
--   Set the version as 1.0.0.
-    We'll use "semantic versioning" and have the automated workflow only increment the last number.
-    "Major" and "minor" versions will be reserved for manual releases (.e.g. when we fix a mistake in the data or when a new column is added).
-
--   List Kristina and Eric in the "Contributors" section with the role "data manager" or maybe "data curator"?
-
--   In the "Related Works" section, enter the DOI for this repo with the relation "is compiled by" and Resource Type of "software"
-
-Once you've created the record, we'll use the resulting concept record ID, which is the numbers at the end of the DOI **that points to all versions**
+The DOI that links to the latest version is 10.5281/zenodo.10823037.  The numbers at the end are known as the "concept id" by Zenodo.  We can use this to find the specific deposit to create a new version of.
 
 ```{r}
-concept_id <- 33102 #test on the sandbox api
+concept_id <- 10823037 
 ```
 
-## New Release
-
-First, a new version gets created, then the data is attached to that version, then it is published.
-
-### Create record for new version
-
-Get latest version of record
+Get latest version string and record ID for this deposit
 
 ```{r}
 req_concept <- 
@@ -73,8 +42,7 @@ req_concept <-
   req_url_query(
     sort = "mostrecent",
     all_versions = 1,
-    q = '"query":"Green Stormwater Infrastructure Data","default_field":"title"'
-    # q = glue::glue('"query":"{concept_id}","default_field":"conceptrecid"')
+    q = glue::glue('"query":"{concept_id}","default_field":"conceptrecid"')
   )
 
 resp_concept <-
@@ -82,13 +50,25 @@ resp_concept <-
   req_perform()
 
 concept <- resp_concept |> resp_body_json()
+# Check here that there is only one result
 
-#TODO check here that there is only one result
+if (length(concept) != 1) {
+  stop("More than one record found! Update query to only return a single result!")
+}
+# Double-check that concept id & DOI matches and error if it doesn't
+if (concept[[1]]$conceptdoi != "10.5281/zenodo.10823037") {
+  stop("DOI of the record returned by the query isn't correct!\n",
+       "Query returned ", concept[[1]]$conceptdoi, " not ", "10.5281/zenodo.10823037")
+}
+
+# record ID of most recent version
 prev_id <- concept[[1]][["record_id"]]
+# version string of most recent version
 prev_version <- concept[[1]][["metadata"]][["version"]]
 ```
 
-
+## Create record for new version
+First, a new version gets created, then the data is attached to that version, then it is published.
 
 Create the new (unpublished) version
 
@@ -104,7 +84,7 @@ resp_new_ver <-
   req_perform()
 ```
 
-Get the URL for the bucket to upload data to.
+Zenodo's method for attaching data is to upload it directly to a object store link returned by the above request. This gets the URL for the object store to upload data to.
 
 ```{r}
 new_ver <- 
@@ -114,18 +94,20 @@ bucket_url <- new_ver$links$bucket
 new_id <- new_ver$id
 ```
 
-Extract metadata from previous release, modify, and attach modified version to new upload
+Extract metadata from previous release, modify to update version and publication date, and attach modified version to new upload
 
 ```{r}
 metadata <- 
   new_ver$metadat |> 
   list_modify(
-    #Probably not best practice to use unexported functions from packages, but didn't feel like writing my own function to do this
+    #Probably not best practice to use unexported functions from packages, but didn't feel like writing my own function to do this.  This increments the last number in the version string.  E.g. 1.0.1 -> 1.0.2. 
     version = usethis:::bump_version(prev_version)["patch"] |> unname(),
     publication_date = Sys.Date()
   )
 
 ```
+
+Update metadata for new version
 
 ```{r}
 req_new_meta <-
@@ -136,10 +118,9 @@ req_new_meta <-
 req_perform(req_new_meta)
 ```
 
+## Attach data
 
-### Attach data
-
-Download most recent data from Box and create a .zip file for upload
+Download most recent data from Box and create a temporary .zip file for upload
 
 ```{r box-dl}
 dir_id <- "250527085917"
@@ -148,17 +129,20 @@ box_setwd(dir_id)
 files <- box_ls() |> as.data.frame()
 
 #download to tempdir
-dir <- fs::path_temp()
+dir <- fs::path_temp("gsi")
 dir_create(dir)
 withr::defer(dir_delete(dir)) #deletes the tempdir when this script finishes I think
 
 walk(files$id, \(x) box_dl(x, local_dir = dir, overwrite = TRUE))
 #zip the whole dir
+#this is done in the temp directory so that the zip file doesn't contain nexted folders of the entire file path
+withr::with_dir(dir, {
+  zip("gsi_data.zip", dir_ls("."))
+})
 zip_path <- path(dir, "gsi_data.zip")
-zip(zip_path, files = dir_ls(dir))
 ```
 
-Use new Zenodo API to upload file directly to bucket link
+Use new Zenodo API to upload file directly to object store link
 
 ```{r}
 req_put <- request(bucket_url) |> 
@@ -175,9 +159,9 @@ resp_put <-
 ```
 
 
-### Publish
+## Publish
 
-Attach metadata and publish
+This makes the new version final.
 
 ```{r}
 req_publish <-
@@ -188,3 +172,4 @@ req_publish
 resp_publish <- req_publish |> req_perform()
 resp_publish
 ```
+
