@@ -31,6 +31,7 @@ The DOI that links to the latest version is 10.5281/zenodo.10823037.  The number
 
 ```{r}
 concept_id <- 10823037 
+concept_doi <- "10.5281/zenodo.10823037"
 ```
 
 Get latest version string and record ID for this deposit
@@ -41,8 +42,8 @@ req_concept <-
   req_url_path("api", "deposit", "depositions") |>
   req_url_query(
     sort = "mostrecent",
-    all_versions = 1,
-    q = glue::glue('"query":"{concept_id}","default_field":"conceptrecid"')
+    all_versions = "true",
+    q = glue::glue('"query":"{concept_doi}","default_field":"conceptdoi"')
   )
 
 resp_concept <-
@@ -50,22 +51,22 @@ resp_concept <-
   req_perform()
 
 concept <- resp_concept |> resp_body_json()
-# Check here that there is only one result
+# Just take most recent version
+latest_version <- concept[[1]]
 
-if (length(concept) != 1) {
-  stop("More than one record found! Update query to only return a single result!")
-}
 # Double-check that concept id & DOI matches and error if it doesn't
-if (concept[[1]]$conceptdoi != "10.5281/zenodo.10823037") {
+if (latest_version$conceptdoi != "10.5281/zenodo.10823037") {
   stop("DOI of the record returned by the query isn't correct!\n",
-       "Query returned ", concept[[1]]$conceptdoi, " not ", "10.5281/zenodo.10823037")
+       "Query returned ", latest_version$conceptdoi, " not ", "10.5281/zenodo.10823037")
 }
 
 # record ID of most recent version
-prev_id <- concept[[1]][["record_id"]]
+prev_id <- latest_version[["record_id"]]
 # version string of most recent version
-prev_version <- concept[[1]][["metadata"]][["version"]]
+prev_version <- latest_version[["metadata"]][["version"]]
 ```
+
+Previous version: `r prev_version`
 
 ## Create record for new version
 First, a new version gets created, then the data is attached to that version, then it is published.
@@ -78,10 +79,14 @@ req_post <-
   req_url_path_append(prev_id, "actions", "newversion") |> 
   req_method("POST")
 req_post
+```
 
+
+```{r}
 resp_new_ver <-
   req_post |> 
   req_perform()
+resp_new_ver
 ```
 
 Zenodo's method for attaching data is to upload it directly to a object store link returned by the above request. This gets the URL for the object store to upload data to.
@@ -107,7 +112,7 @@ metadata <-
 
 ```
 
-Update metadata for new version
+Update metadata for new version, `r metadata$version`, published on `r metadata$publication_date`.
 
 ```{r}
 req_new_meta <-
@@ -135,7 +140,7 @@ withr::defer(dir_delete(dir)) #deletes the tempdir when this script finishes I t
 
 walk(files$id, \(x) box_dl(x, local_dir = dir, overwrite = TRUE))
 #zip the whole dir
-#this is done in the temp directory so that the zip file doesn't contain nexted folders of the entire file path
+#this is done in the temp directory so that the zip file doesn't contain nested folders of the entire file path
 withr::with_dir(dir, {
   zip("gsi_data.zip", dir_ls("."))
 })
@@ -152,10 +157,14 @@ req_put <- request(bucket_url) |>
   req_body_file(zip_path)
 
 req_put
+```
 
+
+```{r}
 resp_put <- 
   req_put |>
   req_perform()
+resp_put
 ```
 
 
