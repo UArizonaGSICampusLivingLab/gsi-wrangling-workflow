@@ -27,7 +27,7 @@ req_base <-
 
 ## Find latest version
 
-The DOI that links to the latest version is 10.5281/zenodo.10823037.  The numbers at the end are known as the "concept id" by Zenodo.  We can use this to find the specific deposit to create a new version of.
+The DOI that links to the latest version is [10.5281/zenodo.10823037](https://zenodo.org/doi/10.5281/zenodo.10823037).  The numbers at the end are known as the "concept id" by Zenodo.  We can use this to find the specific deposit to create a new version of.
 
 ```{r}
 concept_id <- 10823037 
