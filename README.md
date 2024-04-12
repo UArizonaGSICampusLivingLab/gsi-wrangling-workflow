@@ -1,7 +1,6 @@
 # gsi-wrangling-workflow
 
-[![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![DOI](https://zenodo.org/badge/705681121.svg)](https://zenodo.org/doi/10.5281/zenodo.10810408)
+[![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/705681121.svg)](https://zenodo.org/doi/10.5281/zenodo.10810408)
 
 This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://udallcenter.arizona.edu/news/campus-living-lab-creating-more-sustainable-campus-designing-building-and-monitoring-green) at University of Arizona.
 The data set is available upon request.
@@ -13,8 +12,7 @@ Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHu
 
 This repository houses `gsi_wrangling.Rmd` and `gsi_archive.Rmd` which are both published (manually) to Posit Connect as scheduled workflows.
 `gsi_wrangling.Rmd` is run daily and to pull the most recent data for the Campus Living Lab sites from [ZentraCloud](https://zentracloud.com/), wrangle the data, and append it to a .csv file stored on Box.
-`gsi_archive.Rmd` is run monthly to pull the most recent data and metadata from Box and upload it to Zenodo as a new version of [10.5281/zenodo.10823037](https://zenodo.org/doi/10.5281/zenodo.10823037).
-\
+`gsi_archive.Rmd` is run monthly to pull the most recent data and metadata from Box and upload it to Zenodo as a new version of [10.5281/zenodo.10823037](https://zenodo.org/doi/10.5281/zenodo.10823037).\
 The [gsi-dashboard repository](https://github.com/UArizonaGSICampusLivingLab/gsi-dashboard) contains code for a [Shiny](https://shiny.posit.co/) app that is automatically deployed to Posit Connect (using GitHub Actions) when updates are made to the main branch.
 This Shiny app reads in the data from Box on start-up and provides interactive visualizations of the data.
 
@@ -85,3 +83,7 @@ in `R/` you will find:
 -   `gsi_get_data.R`: a function, `gsi_get_data()`, for downloading and wrangling data from the Zentra Cloud API.
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
 -   Other functions used to calculate variables such as heat index, wind chill, etc.
+
+------------------------------------------------------------------------
+
+Developed in collaboration with the University of Arizona [CCT Data Science](https://datascience.cct.arizona.edu/) team
