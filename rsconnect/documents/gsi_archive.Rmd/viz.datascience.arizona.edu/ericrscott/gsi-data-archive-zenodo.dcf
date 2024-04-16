@@ -1,0 +1,12 @@
+name: gsi-data-archive-zenodo
+title: gsi-data-archive-zenodo
+username: ericrscott
+account: ericrscott
+server: viz.datascience.arizona.edu
+hostUrl: https://viz.datascience.arizona.edu/__api__
+appId: 1043
+bundleId: 4900
+url: https://viz.datascience.arizona.edu:443/content/b7c7d7ab-6269-430a-939e-aa1045f2123b/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
