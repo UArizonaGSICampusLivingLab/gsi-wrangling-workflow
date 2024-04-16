@@ -70,9 +70,11 @@ The only thing I've done differently from the `boxr` documentation is to copy th
 
 #### Posit Connect
 
-To publish `gsi_wrangling.Rmd` to [Posit Connect](https://datascience.arizona.edu/analytics-powerhouse/rstudio-connect) and have it work, you need to add secret [environment variables](https://docs.posit.co/connect/user/content-settings/#content-vars) for `ZENTRACLOUD_TOKEN` and `BOX_TOKEN_TEXT`.
-
-Similarly, the `gsi_archive.Rmd` scheduled report requires the environment variables `BOX_TOKEN_TEXT` and `ZENODO_TOKEN` to work correctly.
+Both `gsi_wrangling.Rmd` and `gsi_archive.Rmd` are published "manually" on [Posit Connect at UA](https://datascience.arizona.edu/analytics-powerhouse/rstudio-connect) (viz.datascience.arizona.edu).
+They only need to be re-published if there are changes made to those documents.
+Anyone who is a collaborator *should* be able to publish these documents via RStudio ([instructions](https://support.posit.co/hc/en-us/articles/228270928-Push-button-publishing-to-RStudio-Connect)).
+The environment variables `ZENTRACLOUD_TOKEN` and `BOX_TOKEN_TEXT` need to be set on Posit Connect for these workflows to run ([setting env variables on Posit Connect](https://docs.posit.co/connect/user/content-settings/#content-vars)).
+This should only have to happen once, and not each time a document is re-published.
 
 ### Files
 
