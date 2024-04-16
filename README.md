@@ -64,6 +64,7 @@ Once you've followed those instructions and have added a `BOX_CLIENT_ID` and `BO
 
 This automated workflow uses a [service app](https://r-box.github.io/boxr/articles/boxr-app-service.html) to upload data to a shared box folder when `gsi_wrangling.Rmd` is run on Posit Connect.
 If you need to change any settings or get credentials for this service app, you'll need to request access from Vanessa Buzzard or the CCT Data Science group.
+There are additional UA-specific instructions on setting up a service app here: <https://cct-datascience.github.io/group-procedures/boxr.html>.
 
 `R/box_app_setup.R` contains some code used when setting up the Box service app authentication (think of it like notes rather than a script to run).
 The only thing I've done differently from the `boxr` documentation is to copy the contents of the `.boxr-auth` file and added it as an environment variable `BOX_TOKEN_TEXT`.
