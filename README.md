@@ -1,6 +1,6 @@
 # gsi-wrangling-workflow
 
-[![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/705681121.svg)](https://zenodo.org/doi/10.5281/zenodo.10810408)
+[![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![code DOI](https://img.shields.io/badge/code_DOI-10.5281%2Fzenodo.10810408-blue)](https://zenodo.org/doi/10.5281/zenodo.10810408) [![data DOI](https://img.shields.io/badge/data_DOI-10.5281%2Fzenodo.10823037-blue)](https://zenodo.org/doi/10.5281/zenodo.10823037)
 
 This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://udallcenter.arizona.edu/news/campus-living-lab-creating-more-sustainable-campus-designing-building-and-monitoring-green) at University of Arizona.
 The data set is available upon request.
