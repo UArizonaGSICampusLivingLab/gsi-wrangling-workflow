@@ -2,7 +2,9 @@
 title: "Green Stormwater Infrastructure Data Wrangling"
 author: "Eric R. Scott"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 resource_files:
 - renv.lock
 ---
@@ -46,7 +48,9 @@ files <- box_ls() |> as_tibble()
 
 ### Hourly data
 
-```{r update_data}
+Retrieve the data already on box
+
+```{r old_data}
 #does gsi_living_lab_data.csv exist already?
 if ("gsi_living_lab_data.csv" %in% files$name) {
   old_dat <- files |> 
@@ -58,7 +62,11 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
   old_dat <- tibble()
   prev_end <- ymd("2023-06-05", tz = "America/Phoenix") #first date of data
 }
+```
 
+Retrieve new data
+
+```{r update_data, results='hide'}
 # Get the data and wrangle it
 new_dat <-
   gsi_get_data(start = prev_end)
@@ -103,7 +111,7 @@ all_dat_final <-
 
 ### ETo
 
-Get site_info.csv from box
+Get `site_info.csv` from box
 
 ```{r eto_siteinfo}
 site_info <- 
@@ -118,14 +126,14 @@ inputs <-
   select(device_sn, port_num = port, wind_height = depth_height_m, elevation = Elevation, latitude = Latitude)
 ```
 
-Use site info to get most recent ETo values for all locations from API
+Use site info to get most recent ETo values for all locations from the Zentra Cloud API
 
-```{r eto_get}
+```{r eto_get, results='hide'}
 eto_list <- pmap(inputs, gsi_get_eto)
 eto_new <- list_rbind(eto_list)
 ```
 
-The last date of `eto_new` is not reliable as of 02-09-2024.  It has different values compared to the same date in `eto_prev.`  My guess is this is due to partial days being summarized instead of rounding off to the nearest day when getting the prev 30 days.  I'll just remove it.
+Zentra Cloud appears to calculate daily ETo even with partial hourly data for a day, so the last date of `eto_new` (i.e. today) is not reliable and gets removed.
 
 ```{r eto_new}
 eto_new <- eto_new |> filter(datetime != min(datetime, na.rm = TRUE))
