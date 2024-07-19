@@ -41,7 +41,7 @@ gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitu
     req_retry() #retry in case throttle doesn't work
   
   #View the request
-  req
+  # req
   
   #Perform the request
   resp <- req |> 
