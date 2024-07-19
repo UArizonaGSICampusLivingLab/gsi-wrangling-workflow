@@ -1,7 +1,11 @@
 {
   "R": {
-    "Version": "4.3.2",
+    "Version": "4.3.3",
     "Repositories": [
+      {
+        "Name": "r_universe",
+        "URL": "https://cct-datascience.r-universe.dev"
+      },
       {
         "Name": "r_universe",
         "URL": "https://cct-datascience.r-universe.dev"
@@ -925,7 +929,7 @@
     },
     "httr2": {
       "Package": "httr2",
-      "Version": "0.2.3",
+      "Version": "1.0.2",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -934,13 +938,15 @@
         "cli",
         "curl",
         "glue",
+        "lifecycle",
         "magrittr",
         "openssl",
         "rappdirs",
         "rlang",
+        "vctrs",
         "withr"
       ],
-      "Hash": "193bb297368afbbb42dc85784a46b36e"
+      "Hash": "320c8fe23fcb25a6690ef7bdb6a3a705"
     },
     "ids": {
       "Package": "ids",
