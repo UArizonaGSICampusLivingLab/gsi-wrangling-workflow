@@ -127,13 +127,13 @@ eto_new <- list_rbind(eto_list)
 
 The last date of `eto_new` is not reliable as of 02-09-2024.  It has different values compared to the same date in `eto_prev.`  My guess is this is due to partial days being summarized instead of rounding off to the nearest day when getting the prev 30 days.  I'll just remove it.
 
-```{r}
+```{r eto_new}
 eto_new <- eto_new |> filter(datetime != min(datetime, na.rm = TRUE))
 ```
 
 Read in previously saved ETo data and join.
 
-```{r eto_update}
+```{r eto_prev}
 if ("gsi_living_lab_ETo.csv" %in% files$name) {
   eto_prev <- 
     files |> 
@@ -143,23 +143,36 @@ if ("gsi_living_lab_ETo.csv" %in% files$name) {
 } else {
   eto_prev <- tibble()
 }
-
-eto_full <-
-  bind_rows(eto_prev, eto_new) |> 
-  arrange(datetime, device_sn) |> 
-  distinct() #keep only one row per site per date
-
-#check that there is just one unique value per site per date
-ns <- 
-  eto_full |>
-  count(device_sn, datetime) |>
-  pull(n)
-if(!all(ns == 1)) {
-  stop("More than one unique value for ETo! Reconcile before publishing data")
-}
-
 ```
 
+Zentracloud calculates daily ETo even with partial hourly data, so if data is uploaded retroactively, ETo values may update.  If that is the case, we keep only the new, updated values.
+
+```{r eto_update}
+
+eto_updates <- 
+  left_join(
+    eto_prev |> select(device_sn, port, datetime, ETo.value),
+    eto_new |> select(device_sn, port, datetime, ETo.value),
+    by = join_by(device_sn, port, datetime),
+    suffix = c("_old", "")
+  )
+```
+
+```{r eto_diffs}
+eto_diffs <- eto_updates |> 
+  filter(ETo.value != ETo.value_old)
+if (nrow(eto_diffs) > 0) {
+  warning("Some values of ETo have changed on Zentra Cloud---updating the following values:")
+  eto_diffs
+}
+```
+
+```{r}
+#Overwrite old values with new ones (unless they are old enough to be missing from the new values)
+eto_full <- eto_updates |> 
+  mutate(ETo.value = ifelse(is.na(ETo.value), ETo.value_old, ETo.value)) |> 
+  select(-ETo.value_old)
+```
 
 ## Write data to box
 
