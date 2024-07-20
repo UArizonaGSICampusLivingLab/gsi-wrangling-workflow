@@ -1,11 +1,11 @@
 name: gsilivinglab_-_wrangling_workflow
-title: GSILivingLab - wrangling workflow
+title: gsi_wrangling
 username: ericrscott
 account: ericrscott
 server: viz.datascience.arizona.edu
 hostUrl: https://viz.datascience.arizona.edu/__api__
 appId: 921
-bundleId: 4712
+bundleId: 5511
 url: https://viz.datascience.arizona.edu:443/content/aec57581-1d82-438a-a383-64b227c7620f/
 version: 1
 asMultiple: FALSE
