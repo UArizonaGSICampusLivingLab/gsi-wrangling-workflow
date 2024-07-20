@@ -66,7 +66,7 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 
 Retrieve new data
 
-```{r update_data, results='hide'}
+```{r update_data, results='hide', message=FALSE}
 # Get the data and wrangle it
 new_dat <-
   gsi_get_data(start = prev_end)
@@ -128,15 +128,17 @@ inputs <-
 
 Use site info to get most recent ETo values for all locations from the Zentra Cloud API
 
-```{r eto_get, results='hide'}
+```{r eto_get, results='hide', message=FALSE}
 eto_list <- pmap(inputs, gsi_get_eto)
 eto_new <- list_rbind(eto_list)
 ```
 
-Zentra Cloud appears to calculate daily ETo even with partial hourly data for a day, so the last date of `eto_new` (i.e. today) is not reliable and gets removed.
+Zentra Cloud appears to calculate daily ETo even with partial hourly data for a day, so the oldest date of `eto_new` is not reliable and gets removed.
 
 ```{r eto_new}
-eto_new <- eto_new |> filter(datetime != min(datetime, na.rm = TRUE))
+eto_new <- 
+  eto_new |> 
+  filter(datetime != min(datetime, na.rm = TRUE))
 ```
 
 Read in previously saved ETo data and join.
@@ -156,15 +158,15 @@ if ("gsi_living_lab_ETo.csv" %in% files$name) {
 Zentracloud calculates daily ETo even with partial hourly data, so if data is uploaded retroactively, ETo values may update.  If that is the case, we keep only the new, updated values.
 
 ```{r eto_update}
-
 eto_updates <- 
-  left_join(
+  full_join(
     eto_prev |> select(device_sn, port, datetime, ETo.value),
     eto_new |> select(device_sn, port, datetime, ETo.value),
     by = join_by(device_sn, port, datetime),
     suffix = c("_old", "")
   )
 ```
+
 
 ```{r eto_diffs}
 eto_diffs <- eto_updates |> 
