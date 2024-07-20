@@ -1,4 +1,4 @@
-# getReadings() errors when there is no data returned, but I'd rather it return an empty tibble, so I'll wrap it here.  See: https://gitlab.com/meter-group-inc/pubpackages/zentracloud/-/issues/44
+# getReadings() errors when there is no data returned, but I'd rather it return `NULL`, so I'll wrap it here.  See: https://gitlab.com/meter-group-inc/pubpackages/zentracloud/-/issues/44
 my_getReadings <- function(...) {
   tryCatch(
     error = function(cnd) {
