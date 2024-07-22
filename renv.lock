@@ -3,26 +3,6 @@
     "Version": "4.3.3",
     "Repositories": [
       {
-        "Name": "r_universe",
-        "URL": "https://cct-datascience.r-universe.dev"
-      },
-      {
-        "Name": "r_universe",
-        "URL": "https://cct-datascience.r-universe.dev"
-      },
-      {
-        "Name": "r_universe",
-        "URL": "https://cct-datascience.r-universe.dev"
-      },
-      {
-        "Name": "r_universe",
-        "URL": "https://cct-datascience.r-universe.dev"
-      },
-      {
-        "Name": "r_universe",
-        "URL": "https://cct-datascience.r-universe.dev"
-      },
-      {
         "Name": "CRAN",
         "URL": "https://packagemanager.posit.co/cran/latest"
       }
@@ -1948,9 +1928,15 @@
     },
     "zentracloud": {
       "Package": "zentracloud",
-      "Version": "0.4.6",
-      "Source": "Repository",
-      "Repository": "https://cct-datascience.r-universe.dev",
+      "Version": "0.4.9",
+      "Source": "GitLab",
+      "RemoteType": "gitlab",
+      "RemoteHost": "gitlab.com",
+      "RemoteUsername": "meter-group-inc",
+      "RemoteRepo": "pubpackages/zentracloud",
+      "RemoteSubdir": "",
+      "RemoteRef": "main",
+      "RemoteSha": "da3bb813674389445aa465d8e6a954ab8aeec871",
       "Requirements": [
         "R",
         "arrow",
@@ -1967,7 +1953,7 @@
         "tidyr",
         "uuid"
       ],
-      "Hash": "2a999464851f09ac6641d59c3450fd88"
+      "Hash": "160bece78cd4a47766a8a966d9163463"
     },
     "zip": {
       "Package": "zip",
