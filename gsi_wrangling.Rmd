@@ -80,7 +80,8 @@ Add columns for adjusted temperature (wind chill and heat index) and plant avail
 new_dat <- 
   new_dat |>
   mutate(
-    air_temperature_adj.value = calc_hi(air_temperature.value, relative_humidity.value) |>
+    air_temperature_adj.value = 
+      calc_hi(air_temperature.value, relative_humidity.value) |>
       calc_wind_chill(wind_speed.value) |>
       round(digits = 1),
     paw.value = (water_content.value - 0.06) / 0.11 * 100
@@ -121,9 +122,15 @@ site_info <-
   box_read()
 
 inputs <-
-  site_info |> 
-  filter(sensor_model == "ATMOS41") |> 
-  select(device_sn, port_num = port, wind_height = depth_height_m, elevation = Elevation, latitude = Latitude)
+  site_info |>
+  filter(sensor_model == "ATMOS41") |>
+  select(
+    device_sn,
+    port_num = port,
+    wind_height = depth_height_m,
+    elevation = Elevation,
+    latitude = Latitude
+  )
 ```
 
 Use site info to get most recent ETo values for all locations from the Zentra Cloud API
