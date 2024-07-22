@@ -5,7 +5,7 @@ account: ericrscott
 server: viz.datascience.arizona.edu
 hostUrl: https://viz.datascience.arizona.edu/__api__
 appId: 921
-bundleId: 5511
+bundleId: 5518
 url: https://viz.datascience.arizona.edu:443/content/aec57581-1d82-438a-a383-64b227c7620f/
 version: 1
 asMultiple: FALSE
