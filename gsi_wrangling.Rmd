@@ -22,6 +22,7 @@ library(tidyverse)
 library(zentracloud)
 library(httr2)
 library(jsonlite)
+library(glue)
 source("R/gsi_get_data.R")
 source("R/gsi_get_eto.R")
 source("R/calc_hi.R")
@@ -58,6 +59,8 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
     pull(id) |> 
     box_read(read_fun = readr::read_csv)
   prev_end <- max(old_dat$datetime) |> with_tz("America/Phoenix")
+  #allow for a week of overlap in case values got updated on the API.  Coalescing join below will take care of duplicates.
+  prev_end <- prev_end - weeks(1)
 } else {
   old_dat <- tibble()
   prev_end <- ymd("2023-06-05", tz = "America/Phoenix") #first date of data
@@ -65,6 +68,8 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 ```
 
 Retrieve new data
+
+**Note: if you need to manually run this to retrieve previous data from the API in the event that a sensor has been down, just manually assign a datetime to `start=` in the chunk below.**
 
 ```{r update_data, results='hide', message=FALSE}
 # Get the data and wrangle it
@@ -88,14 +93,39 @@ new_dat <-
 )
 ```
 
-#### Append existing data
+#### Join to existing data
 
-```{r append_new_data}
-all_dat <- 
-  bind_rows(old_dat, new_dat) |> 
+This is a bit tricky and there is possibly an easier to understand solution, but I believe this works for now.  First, a full join by only the "keys" `device_sn`, `sensor`, `port`, and `datetime` combines the old and new data while creating duplicate colums for every variable, suffixed `_old` and `_new`.  Then, for each variable name, `coalesce()` is used to combine old and new, updating `NA`s in the old data with new values.
+
+```{r}
+variables <- old_dat |> 
+  select(-device_sn, -sensor, -port, -datetime) |>
+  colnames()
+
+#Join by keys
+all_dat <-
+  full_join(
+    old_dat,
+    new_dat,
+    by = join_by(device_sn, sensor, port, datetime),
+    suffix = c("_old", "_new")
+  )
+
+#coalesce old and new columns for each original variable column
+purrr::walk(variables, function(.x) {
+  # column names have to be provided as symbols, not character values
+  to_merge <- rlang::syms(c(glue("{.x}_new"), glue("{.x}_old")))
+  # `<<-` is needed to actually update the dataframe, not just spit out a list of new dataframes
+  all_dat <<- all_dat |> 
+    # {{}}, :=, !!! are all operators from `rlang`
+    mutate({{.x}} := coalesce(!!!to_merge), .keep = "unused")
+}) 
+
+all_dat <- all_dat |> 
   filter(!is.na(sensor)) |> # this is somewhat redundant, but having this in gsi_get_data() only removes these from new data
-  distinct() |> #remove duplicate rows
-  arrange(datetime) 
+  #remove any duplicate rows that creeped in
+  distinct() |> 
+  arrange(datetime)
 ```
 
 Missing data due to a device being offline is only indicated by missing datetimes. This next chunk makes missing datetimes explicit.
