@@ -58,6 +58,8 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
     pull(id) |> 
     box_read(read_fun = readr::read_csv)
   prev_end <- max(old_dat$datetime) |> with_tz("America/Phoenix")
+  #allow for a week of overlap in case values got updated on the API.  Coalescing join below will take care of duplicates.
+  prev_end <- prev_end - weeks(1)
 } else {
   old_dat <- tibble()
   prev_end <- ymd("2023-06-05", tz = "America/Phoenix") #first date of data
@@ -65,6 +67,8 @@ if ("gsi_living_lab_data.csv" %in% files$name) {
 ```
 
 Retrieve new data
+
+**Note: if you need to manually run this to retrieve previous data from the API in the event that a sensor has been down, just manually assign a datetime to `start=` in the chunk below.**
 
 ```{r update_data, results='hide', message=FALSE}
 # Get the data and wrangle it
@@ -90,7 +94,7 @@ new_dat <-
 
 #### Join to existing data
 
-This is a bit tricky and there is possibly an easier to understand solution, but I believe this works for now.  First, a full join by only the "keys" `device_sn`, `sensor`, `port`, and `datetime` combines the old and new data while creating duplicate colums for every variable, suffixed `_old` and `_new`.  Then, for each variable name, `coalesce()` is used to combine old and new, updating old values and `NA`s with new ones.
+This is a bit tricky and there is possibly an easier to understand solution, but I believe this works for now.  First, a full join by only the "keys" `device_sn`, `sensor`, `port`, and `datetime` combines the old and new data while creating duplicate colums for every variable, suffixed `_old` and `_new`.  Then, for each variable name, `coalesce()` is used to combine old and new, updating `NA`s in the old data with new values.
 
 ```{r}
 variables <- old_dat |> 
