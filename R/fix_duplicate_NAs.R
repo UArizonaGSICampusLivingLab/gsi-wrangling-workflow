@@ -42,7 +42,8 @@ fixed <- old_dat |>
   #how many rows for each sensor, port, datetime combination?
   mutate(n = n(), .by = c(device_sn, sensor, port, datetime)) |> 
   #keep entries where there is only one row or if there is more than one row and the entries aren't all NAs
-  filter(n == 1 | (n == 2 & !if_all(y_axis_level.value:matric_potential.error_description, is.na)))
+  filter(n == 1 | (n == 2 & !if_all(y_axis_level.value:matric_potential.error_description, is.na))) |> 
+  select(-n)
 
 #The difference should be equal to the number of duplicate rows calculated above
 nrow(old_dat) - nrow(fixed) == nrow(dupes)
