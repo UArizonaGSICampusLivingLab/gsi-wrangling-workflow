@@ -2,7 +2,7 @@
 
 [![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![code DOI](https://img.shields.io/badge/code_DOI-10.5281%2Fzenodo.10810408-blue)](https://zenodo.org/doi/10.5281/zenodo.10810408) [![data DOI](https://img.shields.io/badge/data_DOI-10.5281%2Fzenodo.10823037-blue)](https://zenodo.org/doi/10.5281/zenodo.10823037)
 
-This repository contains code to automatically collect and wrangle data from the [GSI Living Lab]([https://gicampuslivinglab.arizona.edu/]) at University of Arizona.
+This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://gicampuslivinglab.arizona.edu) at University of Arizona.
 The data set is available upon request.
 Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6).
 
