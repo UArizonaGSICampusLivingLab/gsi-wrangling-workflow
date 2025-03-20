@@ -87,6 +87,12 @@ in `R/` you will find:
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
 -   Other functions used to calculate variables such as heat index, wind chill, etc.
 
-------------------------------------------------------------------------
+### Notes
+
+Two sensors at Old Main were plugged into incorrect ports upon installation. On December 11, 2024, these sensors switched logger ports. Plugs for port 3 and 5 were switched on the Old Main z6-19485 logger. This fixed the port and location pairing to match the actual location of each sensor. See site_info.csv for information on how to correct for pre-December 2024 data during analysis. 
+
+### Contributors
+
+<!-- eventually add CITATION.cff -->
 
 Developed in collaboration with the University of Arizona [CCT Data Science](https://datascience.cct.arizona.edu/) team
