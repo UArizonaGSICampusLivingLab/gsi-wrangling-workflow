@@ -73,6 +73,10 @@ in `R/` you will find:
 -   `gsi_get_data.R`: a function, `gsi_get_data()`, for downloading and wrangling data from the Zentra Cloud API.
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
 
+### Notes
+
+Two sensors at the Old Main Location were plugged into incorrect ports upon installation. On December 11, 2024, these sensors switched logger ports. Plugs for port 3 and 5 were switched on the Old Main z6-19485 logger. This caused naming conventions to match the actual location of sensors. Note that this switch should be made in code when analyzing pre December 2024 data.  
+
 ### Contributors
 
 <!-- eventually add CITATION.cff -->
