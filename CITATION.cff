@@ -1,0 +1,40 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Campus Living Lab Green Stormwater Infrastructure Data
+  Workflow
+message: >-
+  To cite the code in this repository, use the metadata in this
+  file. If you wish to use the data and cite it, please use 
+  citation information on the data request form 
+  <https://forms.gle/63qWCybhvHaHunuH6>.
+type: software
+version: 0.1.0
+authors:
+  - given-names: Eric R
+    family-names: Scott
+    orcid: 'https://orcid.org/0000-0002-7430-7879'
+    affiliation: >-
+      Communications & Cyber Technologies, Arizona
+      Experiment Station, University of Arizona
+    email: ericrscott@arizona.edu
+  - given-names: Malcolm Javier
+    family-names: Barrios
+    affiliation: 'College of Engineering, University of Arizona'
+  - given-names: Kristina
+    family-names: Riemer
+    orcid: 'https://orcid.org/0000-0003-3802-3331'
+    affiliation: >-
+      Communications & Cyber Technologies, Arizona
+      Experiment Station, University of Arizona
+  - given-names: Vanessa
+    family-names: Buzzard
+    affiliation: >-
+      School of Natural Resources and the Environment,
+      University of Arizona
+    orcid: 'https://orcid.org/0000-0003-2929-0833'
+repository-code: >-
+  https://github.com/UArizonaGSICampusLivingLab/gsi-wrangling-workflow
+license: MIT

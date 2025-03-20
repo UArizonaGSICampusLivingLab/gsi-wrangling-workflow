@@ -1,10 +1,20 @@
 # gsi-wrangling-workflow
 
-[![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![code DOI](https://img.shields.io/badge/code_DOI-10.5281%2Fzenodo.10810408-blue)](https://zenodo.org/doi/10.5281/zenodo.10810408) [![data DOI](https://img.shields.io/badge/data_DOI-10.5281%2Fzenodo.10823037-blue)](https://zenodo.org/doi/10.5281/zenodo.10823037)
 
-This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://udallcenter.arizona.edu/news/campus-living-lab-creating-more-sustainable-campus-designing-building-and-monitoring-green) at University of Arizona.
-The data set is available upon request. Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6)
-<!-- eventually add a link to request form -->
+This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://gicampuslivinglab.arizona.edu) at University of Arizona.
+The data set is available upon request.
+Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6).
+
+## How does it work?
+
+![](flowchart.png)
+
+This repository houses `gsi_wrangling.Rmd` and `gsi_archive.Rmd` which are both published (manually) to Posit Connect as scheduled workflows.
+`gsi_wrangling.Rmd` is run daily and to pull the most recent data for the Campus Living Lab sites from [ZentraCloud](https://zentracloud.com/), wrangle the data, and append it to a .csv file stored on Box.
+`gsi_archive.Rmd` is run monthly to pull the most recent data and metadata from Box and upload it to Zenodo as a new version of [10.5281/zenodo.10823037](https://zenodo.org/doi/10.5281/zenodo.10823037).\
+The [gsi-dashboard repository](https://github.com/UArizonaGSICampusLivingLab/gsi-dashboard) contains code for a [Shiny](https://shiny.posit.co/) app that is automatically deployed to Posit Connect (using GitHub Actions) when updates are made to the main branch.
+This Shiny app reads in the data from Box on start-up and provides interactive visualizations of the data.
 
 ### Contributing
 
@@ -50,19 +60,22 @@ The Box API is accessed using the `boxr` package.
 You'll find instructions on how to authenticate with Box on the [`boxr` website](https://r-box.github.io/boxr/articles/boxr.html).
 
 If you're a collaborator just interested in running this code locally, you can follow [these instructions](https://r-box.github.io/boxr/articles/boxr-app-interactive.html) to authenticate to Box as a user (this is called an "interactive app", which is a little confusing).
-Once you've follwed those instructions and have added a `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET` to the `.Renviron` file, just be sure to replace `box_auth_service()` with `box_auth()` and you should be able to run the code in `gsi_wrangling.Rmd`.
+Once you've followed those instructions and have added a `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET` to the `.Renviron` file, just be sure to replace `box_auth_service()` with `box_auth()` and you should be able to run the code in `gsi_wrangling.Rmd`.
 
 This automated workflow uses a [service app](https://r-box.github.io/boxr/articles/boxr-app-service.html) to upload data to a shared box folder when `gsi_wrangling.Rmd` is run on Posit Connect.
 If you need to change any settings or get credentials for this service app, you'll need to request access from Vanessa Buzzard or the CCT Data Science group.
+There are additional UA-specific instructions on setting up a service app here: <https://cct-datascience.github.io/group-procedures/boxr.html>.
 
 `R/box_app_setup.R` contains some code used when setting up the Box service app authentication (think of it like notes rather than a script to run).
 The only thing I've done differently from the `boxr` documentation is to copy the contents of the `.boxr-auth` file and added it as an environment variable `BOX_TOKEN_TEXT`.
 
 #### Posit Connect
 
-The automated workflow can be found in `gsi_wrangling.Rmd` and is published on University of Arizona's [Posit Connect server](https://datascience.arizona.edu/analytics-powerhouse/rstudio-connect) where it runs daily as a scheduled report.
-
-To publish `gsi_wrangling.Rmd` to Posit Connect and have it work, you need to add secret [environment variables](https://docs.posit.co/connect/user/content-settings/#content-vars) for `ZENTRACLOUD_TOKEN` and `BOX_TOKEN_TEXT`.
+Both `gsi_wrangling.Rmd` and `gsi_archive.Rmd` are published "manually" on [Posit Connect at UA](https://datascience.arizona.edu/analytics-powerhouse/rstudio-connect) (viz.datascience.arizona.edu).
+They only need to be re-published if there are changes made to those documents.
+Anyone who is a collaborator *should* be able to publish these documents via RStudio ([instructions](https://support.posit.co/hc/en-us/articles/228270928-Push-button-publishing-to-RStudio-Connect)).
+The environment variables `ZENTRACLOUD_TOKEN` and `BOX_TOKEN_TEXT` need to be set on Posit Connect for these workflows to run ([setting env variables on Posit Connect](https://docs.posit.co/connect/user/content-settings/#content-vars)).
+This should only have to happen once, and not each time a document is re-published.
 
 ### Files
 
@@ -72,6 +85,7 @@ in `R/` you will find:
 -   `estimate_data_size.R`: a script for extrapolating data size
 -   `gsi_get_data.R`: a function, `gsi_get_data()`, for downloading and wrangling data from the Zentra Cloud API.
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
+-   Other functions used to calculate variables such as heat index, wind chill, etc.
 
 ### Notes
 
@@ -81,7 +95,4 @@ Two sensors at Old Main were plugged into incorrect ports upon installation. On 
 
 <!-- eventually add CITATION.cff -->
 
--   Eric Scott
--   Malcolm Barrios
--   Kristina Riemer
--   Vanessa Buzzard
+Developed in collaboration with the University of Arizona [CCT Data Science](https://datascience.cct.arizona.edu/) team
