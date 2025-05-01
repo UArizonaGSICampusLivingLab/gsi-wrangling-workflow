@@ -2,7 +2,7 @@
 
 [![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![code DOI](https://img.shields.io/badge/code_DOI-10.5281%2Fzenodo.10810408-blue)](https://zenodo.org/doi/10.5281/zenodo.10810408) [![data DOI](https://img.shields.io/badge/data_DOI-10.5281%2Fzenodo.10823037-blue)](https://zenodo.org/doi/10.5281/zenodo.10823037)
 
-This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://udallcenter.arizona.edu/news/campus-living-lab-creating-more-sustainable-campus-designing-building-and-monitoring-green) at University of Arizona.
+This repository contains code to automatically collect and wrangle data from the [GSI Living Lab](https://gicampuslivinglab.arizona.edu) at University of Arizona.
 The data set is available upon request.
 Request data here: [GSI Living Lab Data Request](https://forms.gle/63qWCybhvHaHunuH6).
 
@@ -87,6 +87,12 @@ in `R/` you will find:
 -   `gsi_get_eto.R`: a function, `gsi_get_eto()`, for downloading potential evapotranspiration data from the ZentraCloud models API endpoint.
 -   Other functions used to calculate variables such as heat index, wind chill, etc.
 
-------------------------------------------------------------------------
+### Notes
+
+Two sensors at Old Main were plugged into incorrect ports upon installation. On December 11, 2024, these sensors switched logger ports. Plugs for port 3 and 5 were switched on the Old Main z6-19485 logger. This fixed the port and location pairing to match the actual location of each sensor. See site_info.csv for information on how to correct for pre-December 2024 data during analysis. 
+
+### Contributors
+
+<!-- eventually add CITATION.cff -->
 
 Developed in collaboration with the University of Arizona [CCT Data Science](https://datascience.cct.arizona.edu/) team
