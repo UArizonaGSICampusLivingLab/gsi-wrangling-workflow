@@ -18,7 +18,18 @@ zentracloud::setZentracloudOptions(
 
 library(boxr)
 library(jose)
-library(tidyverse)
+# library(tidyverse) #don't actually need *all* of tidyverse
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(stringr)
+library(readr)
+library(ggplot2)
+
+library(fs)
+library(units)
+library(withr)
+library(lubridate)
 library(zentracloud)
 library(httr2)
 library(jsonlite)

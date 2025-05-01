@@ -61,7 +61,7 @@ gsi_get_eto <- function(device_sn, port_num = 1,  wind_height, elevation, latitu
   #add metadata to data where appropriate
   out_df <- as_tibble(output$data$readings)
   out_final <- out_df |> 
-    add_column(device_sn = device_sn, port = port_num, ETo.units = eto_units) |> 
+    tibble::add_column(device_sn = device_sn, port = port_num, ETo.units = eto_units) |> 
     #rename to match other data columns
     rename(
       ETo.value = value,
