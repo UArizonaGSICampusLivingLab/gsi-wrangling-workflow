@@ -55,7 +55,7 @@ gsi_get_eto <- function(
   #Perform the request
   resp <- req |>
     req_perform()
-  browser()
+
   #Extract data from the request
 
   output_string <- resp |>
