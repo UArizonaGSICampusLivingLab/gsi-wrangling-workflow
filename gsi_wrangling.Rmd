@@ -106,13 +106,11 @@ new_dat <-
 
 #### Join to existing data
 
-This is a bit tricky and there is possibly an easier to understand solution, but I believe this works for now.  First, a full join by only the "keys" `device_sn`, `sensor`, `port`, and `datetime` combines the old and new data while creating duplicate colums for every variable, suffixed `_old` and `_new`.  Then, for each variable name, `coalesce()` is used to combine old and new, updating `NA`s in the old data with new values.
+This is a bit tricky and there is possibly an easier to understand solution, but I believe this works for now.
+First, a full join by only the "keys" `device_sn`, `sensor`, `port`, and `datetime` combines the old and new data while creating duplicate colums for every variable, suffixed `_old` and `_new`.
+Then, for each variable name, `coalesce()` is used to combine old and new, updating `NA`s in the old data with new values.
 
 ```{r}
-variables <- old_dat |> 
-  select(-device_sn, -sensor, -port, -datetime) |>
-  colnames()
-
 #Join by keys
 all_dat <-
   full_join(
@@ -121,15 +119,17 @@ all_dat <-
     by = join_by(device_sn, sensor, port, datetime),
     suffix = c("_old", "_new")
   )
-
+vars_old <- colnames(all_dat)[str_ends(colnames(all_dat), "_old")]
+vars_new <- colnames(all_dat)[str_ends(colnames(all_dat), "_new")]
 #coalesce old and new columns for each original variable column
-purrr::walk(variables, function(.x) {
+purrr::walk2(vars_old, vars_new, function(old, new) {
   # column names have to be provided as symbols, not character values
-  to_merge <- rlang::syms(c(glue("{.x}_new"), glue("{.x}_old")))
+  to_merge <- rlang::syms(c(old, new))
+  orig <- str_remove(old, "_old$")
   # `<<-` is needed to actually update the dataframe, not just spit out a list of new dataframes
   all_dat <<- all_dat |> 
     # {{}}, :=, !!! are all operators from `rlang`
-    mutate({{.x}} := coalesce(!!!to_merge), .keep = "unused")
+    mutate({{orig}} := coalesce(!!!to_merge), .keep = "unused")
 }) 
 
 all_dat <- all_dat |> 
@@ -139,7 +139,8 @@ all_dat <- all_dat |>
   arrange(datetime)
 ```
 
-Missing data due to a device being offline is only indicated by missing datetimes. This next chunk makes missing datetimes explicit.
+Missing data due to a device being offline is only indicated by missing datetimes.
+This next chunk makes missing datetimes explicit.
 
 ```{r explicit_na}
 all_dat_final <-
@@ -203,7 +204,8 @@ if ("gsi_living_lab_ETo.csv" %in% files$name) {
 }
 ```
 
-Zentracloud calculates daily ETo even with partial hourly data, so if data is uploaded retroactively, ETo values may update.  If that is the case, we keep only the new, updated values.
+Zentracloud calculates daily ETo even with partial hourly data, so if data is uploaded retroactively, ETo values may update.
+If that is the case, we keep only the new, updated values.
 
 ```{r eto_update}
 eto_updates <- 
